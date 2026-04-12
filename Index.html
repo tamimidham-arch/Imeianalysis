@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Registrasi IMEI - Per-7/BC/2023 | Panduan Petugas PLI BVC BOGOR</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; overflow: hidden; height: 100vh; display: flex; }
+        .split { display: flex; width: 100%; height: 100%; }
+        .left-panel { width: 45%; background: #f0f4f8; overflow-y: auto; padding: 20px; border-right: 2px solid #cbd5e1; }
+        .right-panel { width: 55%; background: white; display: flex; flex-direction: column; }
+        .default-content { flex: 1; overflow-y: auto; padding: 20px; background: #f8fafc; }
+        .card { background: white; border-radius: 20px; margin-bottom: 20px; padding: 18px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+        .card-header { font-weight: 700; font-size: 1.1rem; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; border-left: 4px solid #1e6f9f; padding-left: 12px; }
+        .form-card { background: white; border-radius: 20px; margin-bottom: 20px; padding: 18px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+        .form-group { margin-bottom: 14px; }
+        label { font-weight: 600; font-size: 0.8rem; display: block; margin-bottom: 4px; color: #334155; }
+        input, select { width: 100%; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 12px; font-size: 0.85rem; }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+        .btn { background: #1e6f9f; color: white; padding: 10px; border-radius: 40px; font-weight: 600; cursor: pointer; width: 100%; border: none; margin-top: 8px; }
+        .btn-secondary { background: #475569; }
+        .btn-google { background: #ea4335; }
+        .btn-imei { background: #e94560; }
+        .btn-wa-full { background: #25D366; color: white; margin-top: 16px; }
+        .btn-feedback { background: #8b5cf6; color: white; border: none; border-radius: 60px; padding: 14px 20px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+        .btn-feedback:hover { background: #7c3aed; transform: scale(1.02); }
+        .checklist-item { border-radius: 12px; padding: 10px 12px; margin-bottom: 8px; display: flex; align-items: center; gap: 10px; border-left: 3px solid; }
+        .checklist-pass { border-left-color: #10b981; background: #f0fdf4; }
+        .checklist-fail { border-left-color: #ef4444; background: #fef2f2; }
+        .checklist-warning { border-left-color: #f59e0b; background: #fffbeb; }
+        .alert-box { background: #fff5e6; border-radius: 16px; padding: 12px; margin-top: 12px; font-size: 0.8rem; }
+        .alert-danger { background: #fee2e2; border-left: 4px solid #ef4444; }
+        .alert-warning { background: #fffbeb; border-left: 4px solid #f59e0b; }
+        .alert-info { background: #e0f2fe; border-left: 4px solid #0284c7; }
+        .hasil-pajak { background: #1e293b; color: white; border-radius: 16px; padding: 16px; margin-top: 12px; }
+        .hasil-pajak table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+        .hasil-pajak td { padding: 6px 0; }
+        .hasil-pajak td:last-child { text-align: right; font-weight: 600; }
+        .range-box { background: #0f172a; border-radius: 12px; padding: 10px; margin-top: 10px; font-size: 0.75rem; text-align: center; }
+        .small-note { font-size: 0.65rem; color: #5b6e8c; margin-top: 4px; }
+        .imei-result { font-family: monospace; font-size: 0.7rem; padding: 6px; background: #e2e8f0; border-radius: 10px; margin-top: 6px; }
+        .button-group { display: flex; gap: 8px; margin-top: 8px; }
+        .button-group button { margin-top: 0; flex: 1; }
+        .imei-item { background: #f8fafc; border-radius: 12px; padding: 12px; margin-bottom: 12px; border: 1px solid #e2e8f0; }
+        .check-green { width: 24px; height: 24px; border-radius: 50%; background: #e2e8f0; border: 2px solid #cbd5e1; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; }
+        .check-green.checked { background: #10b981; border-color: #10b981; color: white; }
+        .check-green.checked::after { content: "✓"; font-size: 14px; font-weight: bold; }
+        .check-label { font-size: 0.7rem; color: #5b6e8c; margin-top: 6px; text-align: center; }
+        .manual-input { background: #fef9e3; border-left: 4px solid #f59e0b; margin-top: 12px; padding: 12px; border-radius: 12px; }
+        .score-bar { background: #e2e8f0; border-radius: 20px; height: 10px; overflow: hidden; margin-top: 8px; }
+        .score-fill { background: #e94560; height: 100%; width: 0%; border-radius: 20px; transition: width 0.3s; }
+        .prob-text { font-size: 1.2rem; font-weight: bold; margin-top: 8px; }
+        .title-banner { background: linear-gradient(135deg, #0b3b5f, #1a4a6f); color: white; padding: 14px 18px; border-radius: 28px; margin-bottom: 24px; text-align: center; font-weight: 800; font-size: 1.4rem; letter-spacing: 1px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+        .feedback-fab { position: fixed; bottom: 24px; right: 24px; z-index: 1000; }
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: none; justify-content: center; align-items: center; z-index: 2000; }
+        .modal-content { background: white; border-radius: 28px; width: 90%; max-width: 500px; padding: 24px; box-shadow: 0 20px 35px rgba(0,0,0,0.2); }
+        .modal-content h3 { margin-bottom: 16px; display: flex; align-items: center; gap: 10px; }
+        .modal-content textarea { width: 100%; padding: 12px; border-radius: 16px; border: 1px solid #cbd5e1; font-family: inherit; margin: 12px 0; resize: vertical; }
+        .modal-content select, .modal-content input { margin: 8px 0; }
+        .modal-buttons { display: flex; gap: 12px; margin-top: 16px; }
+        .modal-buttons button { flex: 1; padding: 12px; border-radius: 40px; border: none; font-weight: 600; cursor: pointer; }
+        .btn-send { background: #8b5cf6; color: white; }
+        .btn-cancel { background: #e2e8f0; color: #334155; }
+        .toast-message { position: fixed; bottom: 100px; right: 24px; background: #10b981; color: white; padding: 12px 20px; border-radius: 40px; font-size: 0.85rem; z-index: 2001; display: none; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+        .paspor-status { margin-top: 6px; font-size: 0.7rem; padding: 6px 10px; border-radius: 10px; display: none; }
+        .paspor-status.warning { background: #fef3c7; color: #92400e; display: block; }
+        .paspor-status.success { background: #d1fae5; color: #065f46; display: block; }
+        .paspor-status.error { background: #fee2e2; color: #991b1b; display: block; }
+        @media (max-width: 800px) { .split { flex-direction: column; } .left-panel, .right-panel { width: 100%; height: 50%; } .feedback-fab { bottom: 16px; right: 16px; } }
+    </style>
+</head>
+<body>
+<div class="split">
+    <!-- LEFT PANEL -->
+    <div class="left-panel">
+        <div class="title-banner">
+            <i class="fas fa-qrcode"></i> PANDUAN IMEI PLI BC BOGOR
+        </div>
+        <div class="form-card">
+            <div class="card-header"><i class="fas fa-passport"></i> Persyaratan Administrasi</div>
+            <div class="grid-2">
+                <div class="form-group"><label>Nama Penumpang</label><input type="text" id="namaPenumpang" placeholder="Sesuai paspor"></div>
+                <div class="form-group"><label>Nomor Paspor</label>
+                    <input type="text" id="nomorPaspor" placeholder="Paspor number">
+                    <div id="pasporStatus" class="paspor-status"></div>
+                </div>
+            </div>
+            <div class="grid-2">
+                <div class="form-group"><label>Tempat Registrasi</label><select id="statusRegistrasi">
+                    <option value="bandara">BANDARA (dapat pembebasan USD 500)</option>
+                    <option value="web">WEB (tidak dapat pembebasan)</option>
+                </select></div>
+                <div class="form-group"><label>Negara Inbound (Asal Penerbangan)</label>
+                    <select id="negaraInbound">
+                        <option value="">Pilih Negara</option>
+                        <option value="Singapura">Singapura 🇸🇬</option>
+                        <option value="Hongkong">Hongkong 🇭🇰</option>
+                        <option value="Macau">Macau 🇲🇴</option>
+                        <option value="Amerika Serikat">Amerika Serikat 🇺🇸</option>
+                        <option value="UAE">Uni Emirat Arab (UAE) 🇦🇪</option>
+                        <option value="Jepang">Jepang 🇯🇵</option>
+                        <option value="Australia">Australia 🇦🇺</option>
+                        <option value="Korea">Korea Selatan 🇰🇷</option>
+                        <option value="Lainnya">Lainnya</option>
+                    </select>
+                </div>
+            </div>
+            <div class="grid-2">
+                <div class="form-group"><label>Tanggal Kedatangan</label><input type="date" id="tanggalKedatangan" style="padding: 8px 10px;"></div>
+                <div class="form-group"><label>Boarding Pass</label><select id="boardingPass"><option value="ada">ADA</option><option value="tidak_ada">TIDAK ADA</option></select></div>
+            </div>
+            <div class="grid-2">
+                <div class="form-group"><label>Paspor Fisik</label><select id="pasporFisik"><option value="ada">ADA</option><option value="tidak_ada">TIDAK ADA</option></select></div>
+                <div class="form-group"><label>Bukti Invoice</label><select id="invoice"><option value="ada">ADA</option><option value="tidak_ada">TIDAK ADA</option></select></div>
+            </div>
+            <div class="grid-2">
+                <div class="form-group"><label>Kesediaan Membayar</label><select id="membayar"><option value="bersedia">BERSEDIA</option><option value="tidak">TIDAK BERSEDIA</option></select></div>
+                <div class="form-group"><label>Perjalanan (6 bulan terakhir)</label><select id="jumlahTrip"><option value="1">1x (pertama)</option><option value="2">2x</option><option value="3">3x atau lebih</option></select></div>
+            </div>
+            <div class="grid-2">
+                <div class="qr-header form-group">
+                    <label style="white-space: nowrap;">QR Code</label>
+                    <select id="qrCode" style="flex:1;">
+                        <option value="ada">ADA</option>
+                        <option value="tidak_ada">TIDAK ADA</option>
+                    </select>
+                </div>
+                <div class="form-group"><label>Nomor QR Code</label><input type="text" id="nomorQR" placeholder="Scan / input nomor QR"></div>
+            </div>
+            <div class="grid-2">
+                <div class="form-group"><label>Alamat Kota di Paspor</label><input type="text" id="kotaPaspor" placeholder="Kota terbit paspor"></div>
+                <div class="form-group"><label>Kantor Registrasi</label><input type="text" id="kantorReg" placeholder="Kota registrasi"></div>
+            </div>
+            <div class="grid-2">
+                <div class="form-group"><label>Total Hari di Luar Negeri</label><input type="number" id="hariLuarNegeri" placeholder="Hari" value="7"></div>
+                <div class="form-group"><label>Pekerjaan</label><select id="pekerjaan"><option value="bekerja">Bekerja</option><option value="tidak_bekerja">Tidak Bekerja</option></select></div>
+            </div>
+        </div>
+
+        <div class="form-card">
+            <div class="card-header"><i class="fas fa-microchip"></i> Data Perangkat</div>
+            <div class="form-group"><label>Jumlah Perangkat</label><select id="jumlahPerangkat"><option value="1">1 Perangkat</option><option value="2">2 Perangkat</option><option value="3">3 Perangkat atau lebih</option></select></div>
+            
+            <div style="margin-top: 16px; border-top: 1px solid #e2e8f0; padding-top: 12px;">
+                <label><strong>🟦 PERANGKAT 1</strong></label>
+                <div class="grid-3">
+                    <div class="form-group"><label>Merk</label><input type="text" id="merkHp" placeholder="IPHONE"></div>
+                    <div class="form-group"><label>Tipe/Model</label><input type="text" id="tipeHp" placeholder="16 PRO"></div>
+                    <div class="form-group"><label>Tahun Keluaran</label><input type="number" id="tahunHp" placeholder="2025" value="2025"></div>
+                </div>
+                <div class="grid-3">
+                    <div class="form-group"><label>RAM</label><input type="text" id="ramHp" placeholder="8 GB"></div>
+                    <div class="form-group"><label>Storage</label><input type="text" id="storageHp" placeholder="256 GB"></div>
+                    <div class="form-group"><label>Warna</label><input type="text" id="warnaHp" placeholder="Hitam"></div>
+                </div>
+            </div>
+
+            <div id="device2Specs" style="display: none; margin-top: 16px; border-top: 1px solid #cbd5e1; padding-top: 12px;">
+                <label><strong>🟧 PERANGKAT 2</strong></label>
+                <div class="grid-3">
+                    <div class="form-group"><label>Merk 2</label><input type="text" id="merkHp2" placeholder="Contoh: SAMSUNG"></div>
+                    <div class="form-group"><label>Tipe/Model 2</label><input type="text" id="tipeHp2" placeholder="S23 Ultra"></div>
+                    <div class="form-group"><label>Tahun Keluaran 2</label><input type="number" id="tahunHp2" placeholder="2025"></div>
+                </div>
+                <div class="grid-3">
+                    <div class="form-group"><label>RAM 2</label><input type="text" id="ramHp2" placeholder="8 GB"></div>
+                    <div class="form-group"><label>Storage 2</label><input type="text" id="storageHp2" placeholder="512 GB"></div>
+                    <div class="form-group"><label>Warna 2</label><input type="text" id="warnaHp2" placeholder="Putih"></div>
+                </div>
+            </div>
+
+            <div class="form-group"><label>Harga Perangkat (USD) - sesuai invoice</label><input type="number" id="hargaUSD" placeholder="Harga dalam USD" value="500"></div>
+            
+            <div class="imei-item">
+                <label><strong>IMEI 1 (15 digit)</strong></label>
+                <input type="text" id="imei1" placeholder="Masukkan 15 digit IMEI 1" maxlength="15">
+                <div id="imei1Msg" class="imei-result"></div>
+                <div style="display: flex; align-items: center; gap: 10px; margin-top: 8px;">
+                    <div class="check-green" id="checkImei1" onclick="toggleCheck(1)"></div>
+                    <span class="check-label">klik jika data IMEI sudah sesuai dengan pengecekan di imeicheck.com</span>
+                </div>
+            </div>
+            
+            <div class="imei-item">
+                <label><strong>IMEI 2 (15 digit)</strong></label>
+                <input type="text" id="imei2" placeholder="Masukkan 15 digit IMEI 2" maxlength="15">
+                <div id="imei2Msg" class="imei-result"></div>
+                <div style="display: flex; align-items: center; gap: 10px; margin-top: 8px;">
+                    <div class="check-green" id="checkImei2" onclick="toggleCheck(2)"></div>
+                    <span class="check-label">klik jika data IMEI sudah sesuai dengan pengecekan di imeicheck.com</span>
+                </div>
+            </div>
+            
+            <div class="button-group">
+                <button id="cekImeiBtn" class="btn btn-imei"><i class="fas fa-search"></i> Cek IMEI</button>
+                <button id="cariHargaBekasBtn" class="btn btn-google"><i class="fab fa-google"></i> Cek Harga (Google)</button>
+            </div>
+            
+            <div class="manual-input">
+                <label><strong>📌 Harga Bekas dari Hasil Pencarian (IDR)</strong></label>
+                <input type="number" id="hargaBingIDR" placeholder="Masukkan harga bekas dalam Rupiah" value="0">
+                <div class="small-note">Cari harga di Google (pop-up), lalu masukkan angka yang relevan di sini.</div>
+            </div>
+        </div>
+
+        <div class="form-card">
+            <div class="card-header"><i class="fas fa-chart-line"></i> Kurs Pajak (KMK)</div>
+            <div id="kursInfo" style="background:#eef2ff; padding:8px; border-radius:12px;">Memuat kurs...</div>
+            <button id="refreshKursBtn" class="btn-secondary" style="margin-top:8px;">Refresh Kurs</button>
+        </div>
+
+        <button id="runAnalisisBtn" class="btn"><i class="fas fa-clipboard-list"></i> Jalankan Analisis Lengkap</button>
+    </div>
+
+    <!-- RIGHT PANEL -->
+    <div class="right-panel">
+        <div id="defaultContent" class="default-content">
+            <div class="card">
+                <div class="card-header"><i class="fas fa-check-double"></i> Checklist & Status Analisis</div>
+                <div id="checklistContainer" class="alert-box">Klik "Jalankan Analisis Lengkap"</div>
+                <div id="alertContainer"></div>
+            </div>
+            <div class="card">
+                <div class="card-header"><i class="fas fa-chart-pie"></i> Analisis Jastip & Probabilitas</div>
+                <div id="scoreContainer" class="alert-box">Belum dihitung</div>
+                <div class="score-bar"><div class="score-fill" id="scoreFill"></div></div>
+                <div id="probText" class="prob-text"></div>
+                <div id="anomaliDetail" class="small-note" style="margin-top:10px; background:#f1f5f9; padding:8px; border-radius:12px;"></div>
+                <div id="deviasiContainer" class="small-note" style="margin-top:10px; background:#f0fdf4; padding:8px; border-radius:12px;"></div>
+            </div>
+            <div class="card">
+                <div class="card-header"><i class="fas fa-calculator"></i> Perhitungan Pungutan Negara</div>
+                <div id="hasilPajakContainer" class="hasil-pajak">Belum dihitung</div>
+                <div id="rangeContainer" class="range-box"></div>
+            </div>
+            <div class="card">
+                <div class="card-header"><i class="fab fa-whatsapp"></i> Generate Pesan WhatsApp</div>
+                <textarea id="waMessage" rows="6" readonly style="width:100%; padding:12px; border-radius:12px; border:1px solid #cbd5e1; font-size:0.75rem; background:#f8fafc;"></textarea>
+                <button id="copyWaBtn" class="btn btn-wa-full"><i class="fab fa-whatsapp"></i> Copy Pesan WhatsApp</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- FLOATING FEEDBACK BUTTON -->
+<div class="feedback-fab">
+    <button id="feedbackBtn" class="btn-feedback">
+        <i class="fas fa-comment-dots"></i> Kirim Saran / Feedback
+    </button>
+</div>
+
+<!-- MODAL FEEDBACK -->
+<div id="feedbackModal" class="modal-overlay">
+    <div class="modal-content">
+        <h3><i class="fas fa-lightbulb" style="color: #8b5cf6;"></i> Kirim Masukan untuk Pengembangan</h3>
+        <p style="font-size: 0.8rem; color: #5b6e8c; margin-bottom: 12px;">Saran, bug, atau permintaan fitur baru akan sangat membantu pengembangan aplikasi ini.</p>
+        
+        <label>Jenis Feedback</label>
+        <select id="feedbackJenis">
+            <option value="saran">💡 Saran / Ide Fitur Baru</option>
+            <option value="bug">🐛 Laporkan Bug / Error</option>
+            <option value="permintaan">📌 Permintaan Fitur</option>
+            <option value="lainnya">📝 Lainnya</option>
+        </select>
+        
+        <label>Email (opsional) - untuk follow up</label>
+        <input type="email" id="feedbackEmail" placeholder="email@contoh.com">
+        
+        <label>Pesan / Masukan <span style="color:#ef4444;">*</span></label>
+        <textarea id="feedbackPesan" rows="4" placeholder="Ceritakan saran atau kendala yang Anda alami..."></textarea>
+        
+        <div class="modal-buttons">
+            <button id="sendFeedbackBtn" class="btn-send"><i class="fas fa-paper-plane"></i> Kirim</button>
+            <button id="closeModalBtn" class="btn-cancel">Batal</button>
+        </div>
+    </div>
+</div>
+
+<div id="toastMessage" class="toast-message"></div>
+
+<script>
+    // ==================== KONFIGURASI ====================
+    // GANTI DENGAN URL WEB APP HASIL DEPLOY APPS SCRIPT ANDA!
+    const WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbwj2j824rVeqc_MEJBfMO3VtrbAQGIHVPQ3ka3Uskn0Yzx6V0Vgw8Ykoe_xdRul_AJy/exec';
+    
+    // Kurs
+    let kursData = { usd_to_idr: 16922 };
+    async function fetchKurs() {
+        try {
+            let res = await fetch('https://api.exchangerate-api.com/v4/latest/USD');
+            if(res.ok) { let data = await res.json(); kursData.usd_to_idr = Math.round(data.rates.IDR); }
+        } catch(e) { kursData.usd_to_idr = 16922; }
+        document.getElementById("kursInfo").innerHTML = `1 USD = Rp ${kursData.usd_to_idr.toLocaleString()}<br>Pembebasan USD 500 = Rp ${(500 * kursData.usd_to_idr).toLocaleString()}`;
+    }
+    fetchKurs();
+    document.getElementById("refreshKursBtn").addEventListener("click", fetchKurs);
+
+    // IMEI data
+    let imeiData = { 1: { valid: false, imei: "", checked: false, blacklisted: false }, 2: { valid: false, imei: "", checked: false, blacklisted: false } };
+    function toggleCheck(num) {
+        if (!imeiData[num].valid) { alert(`IMEI ${num} belum divalidasi. Klik "Cek IMEI" terlebih dahulu.`); return; }
+        imeiData[num].checked = !imeiData[num].checked;
+        const el = document.getElementById(`checkImei${num}`);
+        if (imeiData[num].checked) el.classList.add("checked");
+        else el.classList.remove("checked");
+    }
+    async function cekIMEIOnline(imei, num) {
+        if (!imei || !/^\d{15}$/.test(imei)) { imeiData[num] = { ...imeiData[num], valid: false }; return imeiData[num]; }
+        try {
+            const response = await fetch('https://cors-anywhere.herokuapp.com/https://api.imei.by/v1/check?imei='+imei+'&service=1');
+            if (response.ok) {
+                const data = await response.json();
+                imeiData[num] = { valid: true, imei: imei, brand: data.properties?.brand || "", model: data.properties?.model || "", blacklisted: data.blacklisted === true, checked: imeiData[num].checked };
+                document.getElementById(`imei${num}Msg`).innerHTML = `✓ IMEI ${num} valid | ${data.properties?.brand || ''} ${data.properties?.model || ''}`;
+            } else throw new Error();
+        } catch(e) {
+            imeiData[num] = { valid: true, imei: imei, brand: "Simulasi", model: "Simulasi", blacklisted: false, checked: imeiData[num].checked };
+            document.getElementById(`imei${num}Msg`).innerHTML = `⚠️ IMEI ${num} format valid (cek manual)`;
+        }
+        return imeiData[num];
+    }
+    
+    document.getElementById("cekImeiBtn").addEventListener("click", async () => {
+        const i1 = document.getElementById("imei1").value, i2 = document.getElementById("imei2").value;
+        if (i1) await cekIMEIOnline(i1, 1);
+        if (i2) await cekIMEIOnline(i2, 2);
+        const popup = window.open('https://imeicheck.com/imei-check', '_blank', 'width=900,height=700,scrollbars=yes,resizable=yes');
+        if (!popup) alert("Pop-up diblokir browser. Izinkan pop-up untuk situs ini.");
+        else setTimeout(() => alert("Cek IMEI di pop-up, lalu centang hijau jika sesuai"), 1000);
+    });
+
+    document.getElementById("cariHargaBekasBtn").addEventListener("click", () => {
+        const merk = document.getElementById("merkHp").value.trim();
+        if (!merk) { alert("Masukkan Merk Perangkat 1"); return; }
+        const tipe = document.getElementById("tipeHp").value.trim();
+        const ram = document.getElementById("ramHp").value.trim();
+        const storage = document.getElementById("storageHp").value.trim();
+        let keywordParts = [merk];
+        if (tipe) keywordParts.push(tipe);
+        if (ram) { let ramClean = ram.replace(/gb/gi, '').trim(); keywordParts.push(`${ramClean}GB`); }
+        if (storage) keywordParts.push(storage);
+        keywordParts.push("harga bekas");
+        let keyword = keywordParts.join(" ");
+        const popup = window.open(`https://www.google.com/search?q=${encodeURIComponent(keyword)}`, 'googleSearch', 'width=1000,height=800,scrollbars=yes,resizable=yes,top=100,left=200');
+        if (!popup) alert("Pop-up diblokir browser. Izinkan pop-up untuk situs ini.\n\nKeyword: " + keyword);
+        else alert(`🔍 Membuka Google di pop-up dengan kata kunci:\n${keyword}\n\nInput harga ke kotak "Harga Bekas".`);
+    });
+
+    // ==================== CEK DUPLIKAT PASPOR (DENGAN HASH SALT+PEPPER) ====================
+    let cekDuplikatTimeout;
+    const pasporInput = document.getElementById('nomorPaspor');
+    const pasporStatus = document.getElementById('pasporStatus');
+    let lastPasporValue = '';
+    
+    async function cekDuplikatPaspor(nomorPaspor, tanggalKedatangan, kantorRegistrasi) {
+        try {
+            const response = await fetch(WEBAPP_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    action: 'cekDuplikat',
+                    nomorPaspor: nomorPaspor,
+                    tanggalKedatangan: tanggalKedatangan,
+                    kantorRegistrasi: kantorRegistrasi
+                })
+            });
+            
+            const result = await response.json();
+            
+            if (result.duplicate) {
+                pasporStatus.className = 'paspor-status warning';
+                pasporStatus.innerHTML = `<i class="fas fa-exclamation-triangle"></i> ${result.message || 'Paspor ini sudah pernah registrasi sebelumnya.'}`;
+            } else {
+                pasporStatus.className = 'paspor-status success';
+                pasporStatus.innerHTML = `<i class="fas fa-check-circle"></i> ${result.message || 'Paspor baru tercatat dalam sistem.'}`;
+            }
+            
+            // Sembunyikan setelah 5 detik
+            setTimeout(() => {
+                if (pasporStatus.className !== 'paspor-status error') {
+                    pasporStatus.style.display = 'none';
+                    setTimeout(() => { pasporStatus.className = 'paspor-status'; }, 100);
+                }
+            }, 5000);
+            
+            return result;
+        } catch(error) {
+            console.error('Error cek duplikat:', error);
+            pasporStatus.className = 'paspor-status error';
+            pasporStatus.innerHTML = `<i class="fas fa-times-circle"></i> Gagal terhubung ke server. Periksa koneksi.`;
+            setTimeout(() => {
+                pasporStatus.style.display = 'none';
+                setTimeout(() => { pasporStatus.className = 'paspor-status'; }, 100);
+            }, 5000);
+            return { duplicate: false, error: true };
+        }
+    }
+    
+    pasporInput.addEventListener('blur', () => {
+        const nomorPaspor = pasporInput.value.trim();
+        if (nomorPaspor.length < 3) return;
+        if (nomorPaspor === lastPasporValue) return;
+        lastPasporValue = nomorPaspor;
+        
+        const tanggalKedatangan = document.getElementById('tanggalKedatangan').value;
+        const kantorRegistrasi = document.getElementById('kantorReg').value.trim();
+        
+        pasporStatus.style.display = 'block';
+        pasporStatus.className = 'paspor-status';
+        pasporStatus.innerHTML = '<i class="fas fa-spinner fa-pulse"></i> Memeriksa riwayat paspor...';
+        
+        cekDuplikatPaspor(nomorPaspor, tanggalKedatangan, kantorRegistrasi);
+    });
+
+    const jumlahPerangkatSelect = document.getElementById("jumlahPerangkat");
+    const device2Div = document.getElementById("device2Specs");
+    function toggleDevice2() { device2Div.style.display = jumlahPerangkatSelect.value === "2" ? "block" : "none"; }
+    jumlahPerangkatSelect.addEventListener("change", toggleDevice2);
+    toggleDevice2();
+
+    function hitungDeviasiHarga(hargaPengakuanIDR, hargaBingIDR) {
+        if (!hargaBingIDR || hargaBingIDR <= 0) return null;
+        const selisih = hargaPengakuanIDR - hargaBingIDR;
+        const persen = (selisih / hargaBingIDR) * 100;
+        return { selisih, persen };
+    }
+
+    function hitungScoring() {
+        let riskIndicators = [];
+        const negara = document.getElementById("negaraInbound").value;
+        const highRiskCountries = ["Singapura", "Hongkong", "Macau", "Amerika Serikat", "UAE", "Jepang", "Australia", "Korea"];
+        const freq = parseInt(document.getElementById("jumlahTrip").value);
+        const tahunSekarang = new Date().getFullYear();
+        const tahunHp1 = parseInt(document.getElementById("tahunHp").value) || 2000;
+        const jmlPerangkat = parseInt(jumlahPerangkatSelect.value);
+        const kotaPaspor = document.getElementById("kotaPaspor").value.trim();
+        const kantorReg = document.getElementById("kantorReg").value.trim();
+        const hariLuar = parseInt(document.getElementById("hariLuarNegeri").value) || 7;
+        const pekerjaan = document.getElementById("pekerjaan").value;
+        let merk1 = document.getElementById("merkHp").value.trim().toLowerCase();
+        let merk2 = "", tahunHp2 = null;
+        if (jmlPerangkat === 2) {
+            merk2 = document.getElementById("merkHp2").value.trim().toLowerCase();
+            tahunHp2 = parseInt(document.getElementById("tahunHp2").value) || 2000;
+        }
+        if (highRiskCountries.includes(negara)) riskIndicators.push("Negara high risk");
+        if (freq > 1) riskIndicators.push("Frekuensi perjalanan >1");
+        if (tahunHp1 >= tahunSekarang) riskIndicators.push("Tahun perangkat 1 = tahun berjalan / baru");
+        if (jmlPerangkat > 1) riskIndicators.push("Jumlah perangkat > 1");
+        if (kotaPaspor && kantorReg && kotaPaspor !== kantorReg) riskIndicators.push("Alamat paspor ≠ kantor registrasi");
+        if (hariLuar < 4) riskIndicators.push("Hari di luar negeri < 4");
+        if (pekerjaan === "tidak_bekerja") riskIndicators.push("Tidak bekerja");
+        if (jmlPerangkat === 2 && merk1 && merk2 && merk1 === merk2) riskIndicators.push("⚠️ ANOMALI: Dua perangkat dengan MERK SAMA");
+        if (jmlPerangkat === 2 && tahunHp2 && tahunHp2 >= tahunSekarang) riskIndicators.push("⚠️ ANOMALI: Perangkat 2 tahun pembelian = tahun berjalan");
+        let score = riskIndicators.length;
+        let maxParams = 10;
+        let persen = (score / maxParams) * 100;
+        let probabilitas = persen >= 70 ? "🔴 TINGGI (≥70%) - Perlu pemeriksaan khusus" : (persen >= 40 ? "⚠️ SEDANG (40-69%) - Perlu klarifikasi lebih lanjut" : "✅ RENDAH (<40%) - Risiko jastip rendah");
+        return { score, maxParams, persen, probabilitas, riskIndicators };
+    }
+
+    function formatRupiah(angka) { return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(angka); }
+
+    function generateWAMessage(data) {
+        const nama = document.getElementById("namaPenumpang").value || "-";
+        const paspor = document.getElementById("nomorPaspor").value || "-";
+        const qrNomor = document.getElementById("nomorQR").value || "-";
+        const merk1 = document.getElementById("merkHp").value || "-";
+        const tipe1 = document.getElementById("tipeHp").value || "-";
+        const ram1 = document.getElementById("ramHp").value || "-";
+        const warna1 = document.getElementById("warnaHp").value || "-";
+        const i1 = imeiData[1].imei || "-";
+        const i2 = imeiData[2].imei || "-";
+        const statusReg = data.statusRegistrasi === "bandara" ? "✅ BANDARA (dapat pembebasan)" : "🌐 WEB (tidak dapat pembebasan)";
+        const validasiStatus = data.tolak ? "❌ BELUM LENGKAP" : "✅ SESUAI";
+        let device2Text = "";
+        if (data.jumlahPerangkat === "2") {
+            const merk2 = document.getElementById("merkHp2").value || "-";
+            const tipe2 = document.getElementById("tipeHp2").value || "-";
+            const ram2 = document.getElementById("ramHp2").value || "-";
+            const warna2 = document.getElementById("warnaHp2").value || "-";
+            device2Text = `\n*PERANGKAT 2:* ${merk2} ${tipe2} | RAM ${ram2} | Warna ${warna2}`;
+        }
+        let hargaBingText = "";
+        if (data.hargaBingIDR && data.hargaBingIDR > 0) {
+            hargaBingText = `\n*Harga Bekas (pasar):* ${formatRupiah(data.hargaBingIDR)}\n*Deviasi Harga:* ${data.deviasi.persen > 0 ? 'Lebih tinggi' : 'Lebih rendah'} ${Math.abs(data.deviasi.persen).toFixed(1)}% dari harga pasar bekas.`;
+        } else {
+            hargaBingText = `\n*Harga Bekas (pasar):* Tidak diisi petugas.`;
+        }
+        const salam = new Date().getHours() < 12 ? "Selamat Pagi" : (new Date().getHours() < 18 ? "Selamat Siang" : "Selamat Sore");
+        return `Assalamualaikum Wr wb. \n\n${salam}\n\nKami sampaikan bahwa dokumen *Registrasi IMEI* dapat diakses melalui:\n\n🔗 _https://s.kemenkeu.go.id/ARSIPIMEI2025_\n(Dokumen tersedia pada folder sesuai tanggal)\n\n*STATUS REGISTRASI:* ${statusReg}\n*VALIDASI ADMINISTRASI:* ${validasiStatus}\n\nSebagai ringkasan, data pihak yang melakukan registrasi IMEI meliputi:\n\n* Kode QR : ${qrNomor}\n* Nama : ${nama}\n* No. Paspor : ${paspor}\n* PERANGKAT 1 : ${merk1} ${tipe1} | RAM ${ram1} | Warna ${warna1}${device2Text}\n* IMEI 1 : ${i1}\n* IMEI 2 : ${i2}\n* Harga pengakuan (invoice) : ${formatRupiah(data.hargaIDR)}${hargaBingText}\n\nTerima kasih atas perhatian Bapak/Ibu.`;
+    }
+
+    function hitungPajak(hargaIDR, statusReg) {
+        let pembebasan = statusReg === "bandara" ? 500 * kursData.usd_to_idr : 0;
+        let np = Math.max(0, hargaIDR - pembebasan);
+        let bea = Math.ceil(np * 0.1 / 1000) * 1000;
+        let ppn = Math.ceil((np + bea) * 0.11 / 1000) * 1000;
+        return { bea, ppn, total: bea + ppn, pembebasan, np };
+    }
+    
+    function validasi60Hari(tgl) { if (!tgl) return false; return (new Date() - new Date(tgl)) / (1000*3600*24) <= 60; }
+    
+    function generateAnalisis() {
+        const qrAda = document.getElementById("qrCode").value === "ada";
+        const tglValid = validasi60Hari(document.getElementById("tanggalKedatangan").value);
+        const boarding = document.getElementById("boardingPass").value === "ada";
+        const paspor = document.getElementById("pasporFisik").value === "ada";
+        const bayar = document.getElementById("membayar").value === "bersedia";
+        const invoice = document.getElementById("invoice").value === "ada";
+        const statusReg = document.getElementById("statusRegistrasi").value;
+        const hargaUSD = parseFloat(document.getElementById("hargaUSD").value) || 0;
+        const hargaIDR = hargaUSD * kursData.usd_to_idr;
+        const jumlahPerangkat = jumlahPerangkatSelect.value;
+        const hargaBingIDR = parseFloat(document.getElementById("hargaBingIDR").value) || 0;
+        let tolak = [];
+        if (!qrAda) tolak.push("QR Code tidak ada");
+        if (!tglValid) tolak.push(">60 hari");
+        if (!boarding) tolak.push("Boarding pass tidak ada");
+        if (!paspor) tolak.push("Paspor tidak ada");
+        if (!bayar) tolak.push("Tidak bersedia bayar");
+        if (imeiData[1].blacklisted || imeiData[2].blacklisted) tolak.push("IMEI Blacklist");
+        let imeiManipulasi = false;
+        if ((imeiData[1].valid && !imeiData[1].checked) || (imeiData[2].valid && !imeiData[2].checked)) {
+            imeiManipulasi = true;
+            tolak.push("IMEI tidak dicentang sesuai hasil cek - minta penumpang ubah data");
+        }
+        let deviasi = null;
+        if (hargaBingIDR > 0) {
+            deviasi = hitungDeviasiHarga(hargaIDR, hargaBingIDR);
+            if (deviasi && Math.abs(deviasi.persen) > 50) tolak.push(`Harga pengakuan deviasi ${deviasi.persen > 0 ? 'lebih tinggi' : 'lebih rendah'} ${Math.abs(deviasi.persen).toFixed(0)}% dari harga pasar bekas (tidak wajar)`);
+        }
+        const perhitungan = hitungPajak(hargaIDR, statusReg);
+        const scoring = hitungScoring();
+        const waMsg = generateWAMessage({ hargaIDR, statusReg, tolak: tolak.length > 0, jumlahPerangkat, hargaBingIDR, deviasi });
+        document.getElementById("waMessage").value = waMsg;
+        return {
+            checklist: [
+                { name: "QR Code", status: qrAda ? "pass" : "fail" },
+                { name: "Tanggal ≤ 60 hari", status: tglValid ? "pass" : "fail" },
+                { name: "Boarding Pass", status: boarding ? "pass" : "fail" },
+                { name: "Paspor Fisik", status: paspor ? "pass" : "fail" },
+                { name: "Kesediaan bayar", status: bayar ? "pass" : "fail" },
+                { name: "Invoice", status: invoice ? "pass" : "warning" },
+                { name: "IMEI 1 sesuai", status: imeiData[1].valid && imeiData[1].checked ? "pass" : (imeiData[1].valid ? "warning" : "fail") },
+                { name: "IMEI 2 sesuai", status: imeiData[2].valid && imeiData[2].checked ? "pass" : (imeiData[2].valid ? "warning" : "fail") }
+            ],
+            tolak: tolak.length > 0, daftarTolak: tolak, perhitungan: perhitungan, scoring: scoring,
+            hargaUSD: hargaUSD, hargaIDR: hargaIDR, imeiManipulasi: imeiManipulasi,
+            hargaBingIDR: hargaBingIDR, deviasi: deviasi
+        };
+    }
+    
+    function updateTampilanDefault(data) {
+        let chk = '';
+        data.checklist.forEach(i => { let icon = i.status === 'pass' ? '✅' : (i.status === 'fail' ? '❌' : '⚠️'); chk += `<div class="checklist-item ${i.status==='pass'?'checklist-pass':(i.status==='fail'?'checklist-fail':'checklist-warning')}"><div>${icon}</div><div>${i.name}</div></div>`; });
+        document.getElementById("checklistContainer").innerHTML = chk;
+        let alerts = '';
+        if (data.tolak) alerts += `<div class="alert-box alert-danger"><strong>⛔ DITOLAK:</strong> ${data.daftarTolak.join(", ")}</div>`;
+        if (data.imeiManipulasi) alerts += `<div class="alert-box alert-danger"><strong>🔴 ALERT MANIPULASI DATA:</strong> IMEI tidak dicentang sesuai hasil cek. Minta penumpang ubah data perangkat!</div>`;
+        document.getElementById("alertContainer").innerHTML = alerts;
+        const s = data.scoring;
+        document.getElementById("scoreContainer").innerHTML = `Skor Risiko Jastip: ${s.score}/${s.maxParams} (${Math.round(s.persen)}%)<br>${s.probabilitas}`;
+        document.getElementById("scoreFill").style.width = `${s.persen}%`;
+        document.getElementById("probText").innerHTML = s.probabilitas;
+        document.getElementById("anomaliDetail").innerHTML = `<strong>📋 Faktor Risiko Teridentifikasi:</strong><br>${s.riskIndicators.map(r => `• ${r}`).join('<br>') || "Tidak ada indikasi menonjol"}`;
+        let deviasiHtml = "";
+        if (data.hargaBingIDR > 0 && data.deviasi) {
+            const warn = Math.abs(data.deviasi.persen) > 50 ? "⚠️" : "✅";
+            deviasiHtml = `<strong>📊 Perbandingan Harga:</strong><br>• Harga pengakuan (invoice): ${formatRupiah(data.hargaIDR)}<br>• Harga bekas dari pasar: ${formatRupiah(data.hargaBingIDR)}<br>• Deviasi: ${data.deviasi.persen > 0 ? 'Lebih tinggi' : 'Lebih rendah'} ${Math.abs(data.deviasi.persen).toFixed(1)}% dari harga pasar bekas.<br>${warn} ${Math.abs(data.deviasi.persen) > 50 ? 'Deviasi >50%: tidak wajar, perlu klarifikasi.' : 'Deviasi dalam batas wajar.'}`;
+        } else if (data.hargaBingIDR === 0) {
+            deviasiHtml = `<strong>📊 Perbandingan Harga:</strong><br>Petugas belum mengisi harga bekas dari hasil pencarian. Silakan cek Google (pop-up) dan input harga.`;
+        } else { deviasiHtml = `<strong>📊 Perbandingan Harga:</strong><br>Harga bekas tidak tersedia.`; }
+        document.getElementById("deviasiContainer").innerHTML = deviasiHtml;
+        const p = data.perhitungan;
+        document.getElementById("hasilPajakContainer").innerHTML = `<table><tr><th>Komponen</th><th>Nilai</th></tr><tr><td>Harga (USD)</td><td>USD ${data.hargaUSD.toLocaleString()}</td></tr><tr><td>Harga (IDR)</td><td>${formatRupiah(data.hargaIDR)}</td></tr>
+  
+<td>Pembebasan</td><td>${p.pembebasan > 0 ? formatRupiah(p.pembebasan) : 'TIDAK DAPAT'}</td></tr>
+        <tr><td>Bea Masuk (10%)</td><td>${formatRupiah(p.bea)}</td></tr>
+        <tr><td>PPN (11%)</td><td>${formatRupiah(p.ppn)}</td></tr>
+        <tr style="border-top:2px solid #facc15;"><td><strong>TOTAL</strong></td><td><strong>${formatRupiah(p.total)}</strong></td></tr>
+        `;
+        document.getElementById("rangeContainer").innerHTML = `Range ±10%: ${formatRupiah(p.total*0.9)} ← ${formatRupiah(p.total)} → ${formatRupiah(p.total*1.1)}`;
+    }
+    
+    document.getElementById("runAnalisisBtn").addEventListener("click", async () => {
+        const i1 = document.getElementById("imei1").value, i2 = document.getElementById("imei2").value;
+        if (i1 && !imeiData[1].valid) await cekIMEIOnline(i1, 1);
+        if (i2 && !imeiData[2].valid) await cekIMEIOnline(i2, 2);
+        const data = generateAnalisis();
+        window.lastAnalisisData = data;
+        updateTampilanDefault(data);
+    });
+    
+    document.getElementById("copyWaBtn").addEventListener("click", () => {
+        const wa = document.getElementById("waMessage");
+        wa.select(); document.execCommand("copy"); alert("✅ Pesan WhatsApp disalin!");
+    });
+    
+    // ==================== FEEDBACK MODAL ====================
+    const modal = document.getElementById('feedbackModal');
+    const feedbackBtn = document.getElementById('feedbackBtn');
+    const closeModalBtn = document.getElementById('closeModalBtn');
+    const sendFeedbackBtn = document.getElementById('sendFeedbackBtn');
+    const toast = document.getElementById('toastMessage');
+    
+    function showToast(message, isError = false) {
+        toast.textContent = message;
+        toast.style.background = isError ? '#ef4444' : '#10b981';
+        toast.style.display = 'block';
+        setTimeout(() => { toast.style.display = 'none'; }, 4000);
+    }
+    
+    feedbackBtn.addEventListener('click', () => { modal.style.display = 'flex'; });
+    closeModalBtn.addEventListener('click', () => { modal.style.display = 'none'; });
+    modal.addEventListener('click', (e) => { if (e.target === modal) modal.style.display = 'none'; });
+    
+    sendFeedbackBtn.addEventListener('click', async () => {
+        const pesan = document.getElementById('feedbackPesan').value.trim();
+        if (!pesan) {
+            alert('Harap isi pesan feedback Anda.');
+            return;
+        }
+        const data = {
+            email: document.getElementById('feedbackEmail').value.trim(),
+            jenis: document.getElementById('feedbackJenis').value,
+            pesan: pesan,
+            halaman: 'Registrasi IMEI - Main App'
+        };
+        sendFeedbackBtn.disabled = true;
+        sendFeedbackBtn.innerHTML = '<i class="fas fa-spinner fa-pulse"></i> Mengirim...';
+        try {
+            await fetch(WEBAPP_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+            showToast('✅ Terima kasih! Masukan Anda telah kami terima.', false);
+            modal.style.display = 'none';
+            document.getElementById('feedbackPesan').value = '';
+            document.getElementById('feedbackEmail').value = '';
+        } catch (error) {
+            console.error('Error:', error);
+            showToast('❌ Gagal mengirim. Silakan coba lagi.', true);
+        } finally {
+            sendFeedbackBtn.disabled = false;
+            sendFeedbackBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Kirim';
+        }
+    });
+    
+    document.getElementById("defaultContent").style.display = "block";
+</script>
+</body>
+</html>
