@@ -3,16 +3,232 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>Registrasi IMEI - Per-7/BC/2023 | Panduan Petugas PLI BVC BOGOR</title>
+    <title>Registrasi IMEI - Per-7/BC/2023 | Sistem Informasi</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Inter', sans-serif; overflow: hidden; height: 100vh; display: flex; }
-        .split { display: flex; width: 100%; height: 100%; }
-        .left-panel { width: 45%; background: #f0f4f8; overflow-y: auto; padding: 20px; border-right: 2px solid #cbd5e1; }
+        body { font-family: 'Inter', sans-serif; overflow: hidden; height: 100vh; display: flex; flex-direction: column; }
+        
+        /* Tombol floating tetap seperti semula */
+        .mode-switch-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 9999;
+            background: #1a4a6f;
+            border: none;
+            border-radius: 50px;
+            padding: 12px 24px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            transition: all 0.3s;
+            font-family: 'Inter', sans-serif;
+        }
+        .mode-switch-btn:hover {
+            transform: scale(1.02);
+            background: #0f3b5c;
+        }
+        .mode-switch-btn i {
+            font-size: 1.1rem;
+        }
+        
+        .feedback-btn {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            z-index: 9999;
+            background: #25D366;
+            border: none;
+            border-radius: 50px;
+            padding: 12px 24px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            transition: all 0.3s;
+            font-family: 'Inter', sans-serif;
+        }
+        .feedback-btn:hover {
+            transform: scale(1.02);
+            background: #1da15a;
+        }
+        
+        .save-reg-btn {
+            position: fixed;
+            bottom: 20px;
+            left: 200px;
+            z-index: 9999;
+            background: #e94560;
+            border: none;
+            border-radius: 50px;
+            padding: 12px 24px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            transition: all 0.3s;
+            font-family: 'Inter', sans-serif;
+        }
+        .save-reg-btn:hover {
+            transform: scale(1.02);
+            background: #c73d56;
+        }
+        
+        /* Modal, toast, dll (tidak berubah) */
+        .modal-saran {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.6);
+            z-index: 10000;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(3px);
+        }
+        .modal-saran.show {
+            display: flex;
+        }
+        .modal-saran-content {
+            background: white;
+            border-radius: 28px;
+            width: 90%;
+            max-width: 450px;
+            padding: 28px;
+            box-shadow: 0 25px 45px rgba(0,0,0,0.25);
+            animation: fadeInUp 0.25s ease;
+        }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .modal-saran-header {
+            font-size: 1.35rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: #1e293b;
+        }
+        .modal-saran-header i {
+            color: #1a4a6f;
+            margin-right: 8px;
+        }
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 26px;
+            cursor: pointer;
+            color: #94a3b8;
+            transition: color 0.2s;
+        }
+        .close-modal:hover {
+            color: #ef4444;
+        }
+        .modal-saran-content textarea {
+            width: 100%;
+            padding: 14px;
+            border: 1px solid #cbd5e1;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-family: 'Inter', sans-serif;
+            resize: vertical;
+            min-height: 130px;
+            margin: 12px 0 16px 0;
+            transition: border 0.2s;
+        }
+        .modal-saran-content textarea:focus {
+            outline: none;
+            border-color: #1a4a6f;
+        }
+        .modal-saran-content input {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1px solid #cbd5e1;
+            border-radius: 20px;
+            margin-bottom: 8px;
+            font-family: 'Inter', sans-serif;
+        }
+        .modal-saran-content input:focus {
+            outline: none;
+            border-color: #1a4a6f;
+        }
+        .btn-saran-kirim {
+            background: #1a4a6f;
+            color: white;
+            border: none;
+            padding: 14px;
+            border-radius: 40px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            font-size: 1rem;
+            margin-top: 12px;
+            transition: background 0.2s;
+        }
+        .btn-saran-kirim:hover {
+            background: #0f3b5c;
+        }
+        .btn-saran-kirim:disabled {
+            background: #94a3b8;
+            cursor: not-allowed;
+        }
+        .toast-msg {
+            position: fixed;
+            bottom: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #1e293b;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            z-index: 10001;
+            display: none;
+            align-items: center;
+            gap: 10px;
+            white-space: nowrap;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        .toast-msg.show {
+            display: flex;
+        }
+        .small-note { font-size: 0.65rem; color: #5b6e8c; margin-top: 4px; }
+        
+        /* Layout utama */
+        .split { display: flex; width: 100%; height: 100%; flex: 1; }
+        .left-panel { 
+            width: 45%; 
+            background: #f0f4f8; 
+            overflow-y: auto; 
+            padding: 20px; 
+            padding-bottom: 100px;  /* Ruang agar tombol floating tidak menutupi tombol analisis saat scroll */
+            border-right: 2px solid #cbd5e1; 
+        }
         .right-panel { width: 55%; background: white; display: flex; flex-direction: column; }
+        .right-header { background: #1a4a6f; color: white; padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; }
+        .right-header h3 { font-size: 1rem; display: flex; align-items: center; gap: 8px; }
+        .close-right-panel { background: none; border: none; color: white; font-size: 20px; cursor: pointer; }
+        .iframe-container { flex: 1; background: white; }
+        iframe { width: 100%; height: 100%; border: none; }
         .default-content { flex: 1; overflow-y: auto; padding: 20px; background: #f8fafc; }
+        
+        /* Kartu dan form */
         .card { background: white; border-radius: 20px; margin-bottom: 20px; padding: 18px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
         .card-header { font-weight: 700; font-size: 1.1rem; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; border-left: 4px solid #1e6f9f; padding-left: 12px; }
         .form-card { background: white; border-radius: 20px; margin-bottom: 20px; padding: 18px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
@@ -23,11 +239,11 @@
         .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
         .btn { background: #1e6f9f; color: white; padding: 10px; border-radius: 40px; font-weight: 600; cursor: pointer; width: 100%; border: none; margin-top: 8px; }
         .btn-secondary { background: #475569; }
-        .btn-google { background: #ea4335; }
+        .btn-bing { background: #008373; }
         .btn-imei { background: #e94560; }
         .btn-wa-full { background: #25D366; color: white; margin-top: 16px; }
-        .btn-feedback { background: #8b5cf6; color: white; border: none; border-radius: 60px; padding: 14px 20px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
-        .btn-feedback:hover { background: #7c3aed; transform: scale(1.02); }
+        
+        /* Checklist, alert, dll */
         .checklist-item { border-radius: 12px; padding: 10px 12px; margin-bottom: 8px; display: flex; align-items: center; gap: 10px; border-left: 3px solid; }
         .checklist-pass { border-left-color: #10b981; background: #f0fdf4; }
         .checklist-fail { border-left-color: #ef4444; background: #fef2f2; }
@@ -35,13 +251,11 @@
         .alert-box { background: #fff5e6; border-radius: 16px; padding: 12px; margin-top: 12px; font-size: 0.8rem; }
         .alert-danger { background: #fee2e2; border-left: 4px solid #ef4444; }
         .alert-warning { background: #fffbeb; border-left: 4px solid #f59e0b; }
-        .alert-info { background: #e0f2fe; border-left: 4px solid #0284c7; }
         .hasil-pajak { background: #1e293b; color: white; border-radius: 16px; padding: 16px; margin-top: 12px; }
         .hasil-pajak table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
         .hasil-pajak td { padding: 6px 0; }
         .hasil-pajak td:last-child { text-align: right; font-weight: 600; }
-        .range-box { background: #0f172a; border-radius: 12px; padding: 10px; margin-top: 10px; font-size: 0.75rem; text-align: center; }
-        .small-note { font-size: 0.65rem; color: #5b6e8c; margin-top: 4px; }
+        .range-box { background: #0f172a; border-radius: 12px; padding: 10px; margin-top: 10px; font-size: 0.75rem; text-align: center; color: #facc15; font-weight: 500; }
         .imei-result { font-family: monospace; font-size: 0.7rem; padding: 6px; background: #e2e8f0; border-radius: 10px; margin-top: 6px; }
         .button-group { display: flex; gap: 8px; margin-top: 8px; }
         .button-group button { margin-top: 0; flex: 1; }
@@ -50,43 +264,93 @@
         .check-green.checked { background: #10b981; border-color: #10b981; color: white; }
         .check-green.checked::after { content: "✓"; font-size: 14px; font-weight: bold; }
         .check-label { font-size: 0.7rem; color: #5b6e8c; margin-top: 6px; text-align: center; }
-        .manual-input { background: #fef9e3; border-left: 4px solid #f59e0b; margin-top: 12px; padding: 12px; border-radius: 12px; }
+        .elaboration-box { background: #fef3c7; border-radius: 16px; padding: 16px; margin-top: 16px; border-left: 4px solid #f59e0b; display: none; }
+        .elaboration-box.show { display: block; }
         .score-bar { background: #e2e8f0; border-radius: 20px; height: 10px; overflow: hidden; margin-top: 8px; }
         .score-fill { background: #e94560; height: 100%; width: 0%; border-radius: 20px; transition: width 0.3s; }
         .prob-text { font-size: 1.2rem; font-weight: bold; margin-top: 8px; }
-        .title-banner { background: linear-gradient(135deg, #0b3b5f, #1a4a6f); color: white; padding: 14px 18px; border-radius: 28px; margin-bottom: 24px; text-align: center; font-weight: 800; font-size: 1.4rem; letter-spacing: 1px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
-        .feedback-fab { position: fixed; bottom: 24px; right: 24px; z-index: 1000; }
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: none; justify-content: center; align-items: center; z-index: 2000; }
-        .modal-content { background: white; border-radius: 28px; width: 90%; max-width: 500px; padding: 24px; box-shadow: 0 20px 35px rgba(0,0,0,0.2); }
-        .modal-content h3 { margin-bottom: 16px; display: flex; align-items: center; gap: 10px; }
-        .modal-content textarea { width: 100%; padding: 12px; border-radius: 16px; border: 1px solid #cbd5e1; font-family: inherit; margin: 12px 0; resize: vertical; }
-        .modal-content select, .modal-content input { margin: 8px 0; }
-        .modal-buttons { display: flex; gap: 12px; margin-top: 16px; }
-        .modal-buttons button { flex: 1; padding: 12px; border-radius: 40px; border: none; font-weight: 600; cursor: pointer; }
-        .btn-send { background: #8b5cf6; color: white; }
-        .btn-cancel { background: #e2e8f0; color: #334155; }
-        .toast-message { position: fixed; bottom: 100px; right: 24px; background: #10b981; color: white; padding: 12px 20px; border-radius: 40px; font-size: 0.85rem; z-index: 2001; display: none; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
-        .paspor-status { margin-top: 6px; font-size: 0.7rem; padding: 6px 10px; border-radius: 10px; display: none; }
-        .paspor-status.warning { background: #fef3c7; color: #92400e; display: block; }
-        .paspor-status.success { background: #d1fae5; color: #065f46; display: block; }
-        .paspor-status.error { background: #fee2e2; color: #991b1b; display: block; }
-        @media (max-width: 800px) { .split { flex-direction: column; } .left-panel, .right-panel { width: 100%; height: 50%; } .feedback-fab { bottom: 16px; right: 16px; } }
+        .manual-harga { background: #f1f5f9; border-radius: 12px; padding: 12px; margin-top: 12px; }
+        .info-harga-bekas { background: #dbeafe; border-radius: 12px; padding: 10px; margin-top: 8px; font-size: 0.75rem; border-left: 3px solid #1e6f9f; }
+        
+        /* Kotak judul hitam */
+        .judul-analyzer {
+            background-color: #000000;
+            color: white;
+            padding: 16px 20px;
+            border-radius: 16px;
+            text-align: center;
+            font-size: 1.8rem;
+            font-weight: 800;
+            letter-spacing: 1px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+        
+        /* Footer */
+        .footer-note {
+            background-color: #1e293b;
+            color: #cbd5e1;
+            text-align: center;
+            padding: 12px;
+            font-size: 0.8rem;
+            font-family: monospace;
+            border-top: 1px solid #334155;
+            width: 100%;
+        }
+        
+        /* Mode pengguna */
+        body.pengguna-mode .risk-sensitive {
+            display: none !important;
+        }
+        body.pengguna-mode .alert-danger, 
+        body.pengguna-mode .alert-warning,
+        body.pengguna-mode .score-bar,
+        body.pengguna-mode .prob-text,
+        body.pengguna-mode .elaboration-box,
+        body.pengguna-mode .range-box {
+            display: none !important;
+        }
+        body.pengguna-mode .hasil-pajak {
+            background: #0f172a;
+        }
+        body.pengguna-mode .checklist-fail,
+        body.pengguna-mode .checklist-warning {
+            display: none !important;
+        }
+        body.pengguna-mode .checklist-pass {
+            display: flex !important;
+        }
+        
+        @media (max-width: 800px) { 
+            .split { flex-direction: column; } 
+            .left-panel, .right-panel { width: 100%; height: 50%; }
+            .save-reg-btn { left: 20px; bottom: 90px; }
+            .feedback-btn { bottom: 20px; }
+            .judul-analyzer { font-size: 1.4rem; padding: 12px; }
+        }
     </style>
 </head>
 <body>
 <div class="split">
     <!-- LEFT PANEL -->
     <div class="left-panel">
-        <div class="title-banner">
-            <i class="fas fa-qrcode"></i> PANDUAN IMEI PLI BC BOGOR
+        <!-- KOTAK JUDUL HITAM -->
+        <div class="judul-analyzer">
+            📱 IMEI ANALYZER
         </div>
+        
         <div class="form-card">
             <div class="card-header"><i class="fas fa-passport"></i> Persyaratan Administrasi</div>
             <div class="grid-2">
                 <div class="form-group"><label>Nama Penumpang</label><input type="text" id="namaPenumpang" placeholder="Sesuai paspor"></div>
-                <div class="form-group"><label>Nomor Paspor</label>
-                    <input type="text" id="nomorPaspor" placeholder="Paspor number">
-                    <div id="pasporStatus" class="paspor-status"></div>
+                <div class="form-group">
+                    <label>Nomor Paspor</label>
+                    <div style="display: flex; gap: 8px;">
+                        <input type="text" id="nomorPaspor" placeholder="Paspor number" style="flex: 1;">
+                        <button type="button" id="cekDuplikasiBtn" class="btn-secondary" style="width: auto; padding: 0 16px; white-space: nowrap;">
+                            <i class="fas fa-search"></i> Cek Duplikasi
+                        </button>
+                    </div>
                 </div>
             </div>
             <div class="grid-2">
@@ -110,7 +374,7 @@
                 </div>
             </div>
             <div class="grid-2">
-                <div class="form-group"><label>Tanggal Kedatangan</label><input type="date" id="tanggalKedatangan" style="padding: 8px 10px;"></div>
+                <div class="form-group"><label>Tanggal Kedatangan</label><input type="date" id="tanggalKedatangan"></div>
                 <div class="form-group"><label>Boarding Pass</label><select id="boardingPass"><option value="ada">ADA</option><option value="tidak_ada">TIDAK ADA</option></select></div>
             </div>
             <div class="grid-2">
@@ -143,37 +407,23 @@
 
         <div class="form-card">
             <div class="card-header"><i class="fas fa-microchip"></i> Data Perangkat</div>
+            <div class="grid-3">
+                <div class="form-group"><label>Merk</label><input type="text" id="merkHp" placeholder="IPHONE"></div>
+                <div class="form-group"><label>Tipe/Model</label><input type="text" id="tipeHp" placeholder="12 PRO MAX"></div>
+                <div class="form-group"><label>Tahun Keluaran</label><input type="number" id="tahunHp" placeholder="2025" value="2025"></div>
+            </div>
+            <div class="grid-3">
+                <div class="form-group"><label>RAM</label><input type="text" id="ramHp" placeholder="6 GB"></div>
+                <div class="form-group"><label>Storage</label><input type="text" id="storageHp" placeholder="256 GB"></div>
+                <div class="form-group"><label>Warna</label><input type="text" id="warnaHp" placeholder="Hitam"></div>
+            </div>
             <div class="form-group"><label>Jumlah Perangkat</label><select id="jumlahPerangkat"><option value="1">1 Perangkat</option><option value="2">2 Perangkat</option><option value="3">3 Perangkat atau lebih</option></select></div>
             
-            <div style="margin-top: 16px; border-top: 1px solid #e2e8f0; padding-top: 12px;">
-                <label><strong>🟦 PERANGKAT 1</strong></label>
-                <div class="grid-3">
-                    <div class="form-group"><label>Merk</label><input type="text" id="merkHp" placeholder="IPHONE"></div>
-                    <div class="form-group"><label>Tipe/Model</label><input type="text" id="tipeHp" placeholder="16 PRO"></div>
-                    <div class="form-group"><label>Tahun Keluaran</label><input type="number" id="tahunHp" placeholder="2025" value="2025"></div>
-                </div>
-                <div class="grid-3">
-                    <div class="form-group"><label>RAM</label><input type="text" id="ramHp" placeholder="8 GB"></div>
-                    <div class="form-group"><label>Storage</label><input type="text" id="storageHp" placeholder="256 GB"></div>
-                    <div class="form-group"><label>Warna</label><input type="text" id="warnaHp" placeholder="Hitam"></div>
-                </div>
+            <div class="form-group">
+                <label>Harga Invoice (USD) - <span style="color:#e94560;">Hanya referensi</span></label>
+                <input type="number" id="hargaUSD" placeholder="Harga dalam USD" value="500">
+                <div class="small-note">*Tidak digunakan untuk perhitungan pajak. Dasar perhitungan adalah Harga Bekas di bawah.</div>
             </div>
-
-            <div id="device2Specs" style="display: none; margin-top: 16px; border-top: 1px solid #cbd5e1; padding-top: 12px;">
-                <label><strong>🟧 PERANGKAT 2</strong></label>
-                <div class="grid-3">
-                    <div class="form-group"><label>Merk 2</label><input type="text" id="merkHp2" placeholder="Contoh: SAMSUNG"></div>
-                    <div class="form-group"><label>Tipe/Model 2</label><input type="text" id="tipeHp2" placeholder="S23 Ultra"></div>
-                    <div class="form-group"><label>Tahun Keluaran 2</label><input type="number" id="tahunHp2" placeholder="2025"></div>
-                </div>
-                <div class="grid-3">
-                    <div class="form-group"><label>RAM 2</label><input type="text" id="ramHp2" placeholder="8 GB"></div>
-                    <div class="form-group"><label>Storage 2</label><input type="text" id="storageHp2" placeholder="512 GB"></div>
-                    <div class="form-group"><label>Warna 2</label><input type="text" id="warnaHp2" placeholder="Putih"></div>
-                </div>
-            </div>
-
-            <div class="form-group"><label>Harga Perangkat (USD) - sesuai invoice</label><input type="number" id="hargaUSD" placeholder="Harga dalam USD" value="500"></div>
             
             <div class="imei-item">
                 <label><strong>IMEI 1 (15 digit)</strong></label>
@@ -197,117 +447,229 @@
             
             <div class="button-group">
                 <button id="cekImeiBtn" class="btn btn-imei"><i class="fas fa-search"></i> Cek IMEI</button>
-                <button id="cariHargaBekasBtn" class="btn btn-google"><i class="fab fa-google"></i> Cek Harga (Google)</button>
+                <button id="cariHargaBekasBtn" class="btn btn-bing"><i class="fab fa-microsoft"></i> Cek Harga (Bing)</button>
             </div>
             
-            <div class="manual-input">
-                <label><strong>📌 Harga Bekas dari Hasil Pencarian (IDR)</strong></label>
-                <input type="number" id="hargaBingIDR" placeholder="Masukkan harga bekas dalam Rupiah" value="0">
-                <div class="small-note">Cari harga di Google (pop-up), lalu masukkan angka yang relevan di sini.</div>
+            <div class="manual-harga">
+                <label><strong>💰 HARGA BEKAS (dasar perhitungan pajak)</strong></label>
+                <input type="text" id="manualHargaBekas" placeholder="Contoh: Rp 4.500.000 - Rp 5.500.000">
+                <div class="small-note">⚠️ Copy paste estimasi harga bekas dari hasil pencarian Bing di atas. <strong>Ini adalah dasar perhitungan pungutan negara!</strong></div>
+                <div id="infoHargaBekasParsed" class="info-harga-bekas" style="display:none;"></div>
             </div>
         </div>
 
+        <div id="elaborationBox" class="elaboration-box risk-sensitive">
+            <div class="card-header" style="margin-bottom:12px;"><i class="fas fa-question-circle"></i> Pertanyaan Elaboratif (Resiko Tinggi >80%)</div>
+            <div class="form-group"><label>📌 Apakah perangkat ini untuk penggunaan pribadi?</label><select id="elabPribadi"><option value="ya">Ya</option><option value="tidak">Tidak</option></select></div>
+            <div class="form-group"><label>📌 Apakah ada bukti kepemilikan selain invoice?</label><select id="elabBukti"><option value="ya">Ya</option><option value="tidak">Tidak</option></select></div>
+            <div class="form-group"><label>📌 Apakah penumpang pernah melakukan registrasi IMEI sebelumnya?</label><select id="elabPernah"><option value="tidak">Tidak</option><option value="ya">Ya</option></select></div>
+            <div class="form-group"><label>📌 Tujuan membawa perangkat ini?</label><input type="text" id="elabTujuan" placeholder="Contoh: Pemakaian sendiri, hadiah, dijual"></div>
+        </div>
+
         <div class="form-card">
-            <div class="card-header"><i class="fas fa-chart-line"></i> Kurs Pajak (KMK)</div>
+            <div class="card-header"><i class="fas fa-chart-line"></i> Kurs Pajak (API Publik)</div>
             <div id="kursInfo" style="background:#eef2ff; padding:8px; border-radius:12px;">Memuat kurs...</div>
             <button id="refreshKursBtn" class="btn-secondary" style="margin-top:8px;">Refresh Kurs</button>
         </div>
 
         <button id="runAnalisisBtn" class="btn"><i class="fas fa-clipboard-list"></i> Jalankan Analisis Lengkap</button>
+        <!-- Spacer opsional (padding-bottom sudah cukup) -->
     </div>
 
     <!-- RIGHT PANEL -->
-    <div class="right-panel">
+    <div class="right-panel" id="rightPanel">
         <div id="defaultContent" class="default-content">
             <div class="card">
-                <div class="card-header"><i class="fas fa-check-double"></i> Checklist & Status Analisis</div>
+                <div class="card-header"><i class="fas fa-check-double"></i> Status Kelengkapan Dokumen</div>
                 <div id="checklistContainer" class="alert-box">Klik "Jalankan Analisis Lengkap"</div>
-                <div id="alertContainer"></div>
+                <div id="alertContainer" class="risk-sensitive"></div>
             </div>
-            <div class="card">
+            
+            <div class="card risk-sensitive">
                 <div class="card-header"><i class="fas fa-chart-pie"></i> Analisis Jastip & Probabilitas</div>
                 <div id="scoreContainer" class="alert-box">Belum dihitung</div>
                 <div class="score-bar"><div class="score-fill" id="scoreFill"></div></div>
                 <div id="probText" class="prob-text"></div>
-                <div id="anomaliDetail" class="small-note" style="margin-top:10px; background:#f1f5f9; padding:8px; border-radius:12px;"></div>
-                <div id="deviasiContainer" class="small-note" style="margin-top:10px; background:#f0fdf4; padding:8px; border-radius:12px;"></div>
             </div>
+            
             <div class="card">
                 <div class="card-header"><i class="fas fa-calculator"></i> Perhitungan Pungutan Negara</div>
                 <div id="hasilPajakContainer" class="hasil-pajak">Belum dihitung</div>
-                <div id="rangeContainer" class="range-box"></div>
+                <div id="rangeContainer" class="range-box risk-sensitive"></div>
             </div>
+            
             <div class="card">
                 <div class="card-header"><i class="fab fa-whatsapp"></i> Generate Pesan WhatsApp</div>
                 <textarea id="waMessage" rows="6" readonly style="width:100%; padding:12px; border-radius:12px; border:1px solid #cbd5e1; font-size:0.75rem; background:#f8fafc;"></textarea>
                 <button id="copyWaBtn" class="btn btn-wa-full"><i class="fab fa-whatsapp"></i> Copy Pesan WhatsApp</button>
             </div>
         </div>
-    </div>
-</div>
-
-<!-- FLOATING FEEDBACK BUTTON -->
-<div class="feedback-fab">
-    <button id="feedbackBtn" class="btn-feedback">
-        <i class="fas fa-comment-dots"></i> Kirim Saran / Feedback
-    </button>
-</div>
-
-<!-- MODAL FEEDBACK -->
-<div id="feedbackModal" class="modal-overlay">
-    <div class="modal-content">
-        <h3><i class="fas fa-lightbulb" style="color: #8b5cf6;"></i> Kirim Masukan untuk Pengembangan</h3>
-        <p style="font-size: 0.8rem; color: #5b6e8c; margin-bottom: 12px;">Saran, bug, atau permintaan fitur baru akan sangat membantu pengembangan aplikasi ini.</p>
         
-        <label>Jenis Feedback</label>
-        <select id="feedbackJenis">
-            <option value="saran">💡 Saran / Ide Fitur Baru</option>
-            <option value="bug">🐛 Laporkan Bug / Error</option>
-            <option value="permintaan">📌 Permintaan Fitur</option>
-            <option value="lainnya">📝 Lainnya</option>
-        </select>
-        
-        <label>Email (opsional) - untuk follow up</label>
-        <input type="email" id="feedbackEmail" placeholder="email@contoh.com">
-        
-        <label>Pesan / Masukan <span style="color:#ef4444;">*</span></label>
-        <textarea id="feedbackPesan" rows="4" placeholder="Ceritakan saran atau kendala yang Anda alami..."></textarea>
-        
-        <div class="modal-buttons">
-            <button id="sendFeedbackBtn" class="btn-send"><i class="fas fa-paper-plane"></i> Kirim</button>
-            <button id="closeModalBtn" class="btn-cancel">Batal</button>
+        <div id="iframeContent" style="display: none; flex-direction: column; height: 100%;">
+            <div class="right-header">
+                <h3 id="rightPanelTitle"><i class="fas fa-search"></i> Pencarian</h3>
+                <button class="close-right-panel" id="closeRightPanelBtn">&times;</button>
+            </div>
+            <div class="iframe-container"><iframe id="rightIframe" src="about:blank" title="Konten"></iframe></div>
         </div>
     </div>
 </div>
 
-<div id="toastMessage" class="toast-message"></div>
+<!-- Tombol Mode -->
+<button id="switchModeBtn" class="mode-switch-btn">
+    <i class="fas fa-user-friends"></i>
+    <span id="modeBtnText">Mode Pengguna Jasa</span>
+</button>
+
+<!-- TOMBOL SARAN & MASUKAN -->
+<button id="feedbackBtn" class="feedback-btn">
+    <i class="fas fa-comment-dots"></i>
+    <span>Saran & Masukan</span>
+</button>
+
+<!-- TOMBOL SIMPAN DATA REGISTRASI -->
+<button id="saveRegBtn" class="save-reg-btn">
+    <i class="fas fa-save"></i>
+    <span>Simpan Data Registrasi</span>
+</button>
+
+<!-- MODAL SARAN -->
+<div id="modalSaran" class="modal-saran">
+    <div class="modal-saran-content">
+        <div class="modal-saran-header">
+            <span><i class="fas fa-pen-fancy"></i> Saran untuk Pengembangan Web</span>
+            <button class="close-modal" id="closeModalBtn">&times;</button>
+        </div>
+        <input type="text" id="namaPetugas" placeholder="Nama petugas (opsional)">
+        <textarea id="isiSaran" placeholder="Tulis saran atau masukan Anda untuk pengembangan aplikasi ini..."></textarea>
+        <button id="kirimSaranBtn" class="btn-saran-kirim"><i class="fas fa-paper-plane"></i> Kirim Saran</button>
+    </div>
+</div>
+
+<!-- TOAST NOTIF -->
+<div id="toastMsg" class="toast-msg">
+    <i class="fas fa-check-circle"></i> <span id="toastText"></span>
+</div>
+
+<!-- FOOTNOTE -->
+<div class="footer-note">
+    Fokker 1.5 (PLI BC BOGOR)
+</div>
 
 <script>
-    // ==================== KONFIGURASI ====================
-    // GANTI DENGAN URL WEB APP HASIL DEPLOY APPS SCRIPT ANDA!
-    const WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbzEMdhTVm0_KNHEvId9oxBwFeX8mfhEkUxf2rBOSZ8H28GvOvtYfKZJDjUUishiY5MM/exec';
+    // ==================== KONFIGURASI APPS SCRIPT ====================
+    // 🔴🔴🔴 GANTI URL INI DENGAN APPS SCRIPT URL HASIL DEPLOY ANDA 🔴🔴🔴
+    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyQxMZ5TFPOae6G1-zHrbMC_k08yIvC6SJhv6tPzk_j8qJi2K2SsODJ4oONJoqmr5LV/exec';
     
-    // Kurs
+    // ==================== FUNGSI HASH SHA-256 ====================
+    async function sha256(message) {
+        const msgBuffer = new TextEncoder().encode(message);
+        const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+        const hashArray = Array.from(new Uint8Array(hashBuffer));
+        const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+        return hashHex;
+    }
+    
+    // ==================== MODE MANAGEMENT ====================
+    let currentMode = 'petugas';
+    
+    function setMode(mode) {
+        currentMode = mode;
+        const body = document.body;
+        const btnText = document.getElementById('modeBtnText');
+        const btnIcon = document.querySelector('#switchModeBtn i');
+        
+        if (mode === 'petugas') {
+            body.classList.remove('pengguna-mode');
+            btnText.innerText = 'Mode Pengguna Jasa';
+            btnIcon.className = 'fas fa-user-friends';
+            document.querySelectorAll('.risk-sensitive').forEach(el => {
+                el.style.display = '';
+            });
+        } else {
+            body.classList.add('pengguna-mode');
+            btnText.innerText = 'Mode Petugas';
+            btnIcon.className = 'fas fa-user-shield';
+            if (window.lastAnalisisData) {
+                updateTampilanPengguna(window.lastAnalisisData);
+            }
+        }
+        
+        if (window.lastAnalisisData) {
+            if (mode === 'petugas') {
+                updateTampilanDefault(window.lastAnalisisData);
+            } else {
+                updateTampilanPengguna(window.lastAnalisisData);
+            }
+        }
+    }
+    
+    document.getElementById('switchModeBtn').addEventListener('click', () => {
+        if (currentMode === 'petugas') {
+            setMode('pengguna');
+        } else {
+            setMode('petugas');
+        }
+    });
+    
+    // ==================== KURS ====================
     let kursData = { usd_to_idr: 16922 };
     async function fetchKurs() {
         try {
             let res = await fetch('https://api.exchangerate-api.com/v4/latest/USD');
-            if(res.ok) { let data = await res.json(); kursData.usd_to_idr = Math.round(data.rates.IDR); }
-        } catch(e) { kursData.usd_to_idr = 16922; }
-        document.getElementById("kursInfo").innerHTML = `1 USD = Rp ${kursData.usd_to_idr.toLocaleString()}<br>Pembebasan USD 500 = Rp ${(500 * kursData.usd_to_idr).toLocaleString()}`;
+            if(res.ok) { 
+                let data = await res.json(); 
+                kursData.usd_to_idr = Math.round(data.rates.IDR);
+                document.getElementById("kursInfo").innerHTML = `✅ 1 USD = Rp ${kursData.usd_to_idr.toLocaleString()}<br>Pembebasan USD 500 = Rp ${(500 * kursData.usd_to_idr).toLocaleString()}`;
+            } else {
+                throw new Error('Gagal fetch');
+            }
+        } catch(e) { 
+            kursData.usd_to_idr = 16922;
+            document.getElementById("kursInfo").innerHTML = `⚠️ Menggunakan kurs default: 1 USD = Rp ${kursData.usd_to_idr.toLocaleString()}<br>Pembebasan USD 500 = Rp ${(500 * kursData.usd_to_idr).toLocaleString()}<br><small>Gagal update kurs, pastikan koneksi internet</small>`;
+        }
     }
     fetchKurs();
     document.getElementById("refreshKursBtn").addEventListener("click", fetchKurs);
 
-    // IMEI data
-    let imeiData = { 1: { valid: false, imei: "", checked: false, blacklisted: false }, 2: { valid: false, imei: "", checked: false, blacklisted: false } };
-    function toggleCheck(num) {
+    // ==================== PANEL ====================
+    const defaultContent = document.getElementById('defaultContent');
+    const iframeContent = document.getElementById('iframeContent');
+    const rightIframe = document.getElementById('rightIframe');
+    const closeRightPanelBtn = document.getElementById('closeRightPanelBtn');
+    
+    function showIframeMode(title, url) {
+        defaultContent.style.display = 'none';
+        iframeContent.style.display = 'flex';
+        document.getElementById('rightPanelTitle').innerHTML = title;
+        rightIframe.src = url;
+    }
+    
+    function showDefaultMode() {
+        iframeContent.style.display = 'none';
+        defaultContent.style.display = 'block';
+        rightIframe.src = 'about:blank';
+        if (window.lastAnalisisData) {
+            if (currentMode === 'petugas') {
+                updateTampilanDefault(window.lastAnalisisData);
+            } else {
+                updateTampilanPengguna(window.lastAnalisisData);
+            }
+        }
+    }
+    closeRightPanelBtn.addEventListener('click', showDefaultMode);
+
+    // ==================== IMEI ====================
+    let imeiData = { 1: { valid: false, imei: "", checked: false, blacklisted: false, brand: "", model: "" }, 2: { valid: false, imei: "", checked: false, blacklisted: false, brand: "", model: "" } };
+    
+    window.toggleCheck = function(num) {
         if (!imeiData[num].valid) { alert(`IMEI ${num} belum divalidasi. Klik "Cek IMEI" terlebih dahulu.`); return; }
         imeiData[num].checked = !imeiData[num].checked;
         const el = document.getElementById(`checkImei${num}`);
         if (imeiData[num].checked) el.classList.add("checked");
         else el.classList.remove("checked");
     }
+    
     async function cekIMEIOnline(imei, num) {
         if (!imei || !/^\d{15}$/.test(imei)) { imeiData[num] = { ...imeiData[num], valid: false }; return imeiData[num]; }
         try {
@@ -319,7 +681,7 @@
             } else throw new Error();
         } catch(e) {
             imeiData[num] = { valid: true, imei: imei, brand: "Simulasi", model: "Simulasi", blacklisted: false, checked: imeiData[num].checked };
-            document.getElementById(`imei${num}Msg`).innerHTML = `⚠️ IMEI ${num} format valid (cek manual)`;
+            document.getElementById(`imei${num}Msg`).innerHTML = `⚠️ IMEI ${num} format valid (cek manual di imeicheck.com)`;
         }
         return imeiData[num];
     }
@@ -328,176 +690,159 @@
         const i1 = document.getElementById("imei1").value, i2 = document.getElementById("imei2").value;
         if (i1) await cekIMEIOnline(i1, 1);
         if (i2) await cekIMEIOnline(i2, 2);
-        const popup = window.open('https://imeicheck.com/imei-check', '_blank', 'width=900,height=700,scrollbars=yes,resizable=yes');
-        if (!popup) alert("Pop-up diblokir browser. Izinkan pop-up untuk situs ini.");
-        else setTimeout(() => alert("Cek IMEI di pop-up, lalu centang hijau jika sesuai"), 1000);
+        showIframeMode('Cek IMEI', 'https://imeicheck.com/imei-check');
+        setTimeout(() => alert("Copy IMEI ke imeicheck.com, lalu centang hijau jika sesuai"), 1000);
     });
 
+    // ==================== HARGA BEKAS ====================
     document.getElementById("cariHargaBekasBtn").addEventListener("click", () => {
         const merk = document.getElementById("merkHp").value.trim();
-        if (!merk) { alert("Masukkan Merk Perangkat 1"); return; }
         const tipe = document.getElementById("tipeHp").value.trim();
-        const ram = document.getElementById("ramHp").value.trim();
         const storage = document.getElementById("storageHp").value.trim();
-        let keywordParts = [merk];
-        if (tipe) keywordParts.push(tipe);
-        if (ram) { let ramClean = ram.replace(/gb/gi, '').trim(); keywordParts.push(`${ramClean}GB`); }
-        if (storage) keywordParts.push(storage);
-        keywordParts.push("harga bekas");
-        let keyword = keywordParts.join(" ");
-        const popup = window.open(`https://www.google.com/search?q=${encodeURIComponent(keyword)}`, 'googleSearch', 'width=1000,height=800,scrollbars=yes,resizable=yes,top=100,left=200');
-        if (!popup) alert("Pop-up diblokir browser. Izinkan pop-up untuk situs ini.\n\nKeyword: " + keyword);
-        else alert(`🔍 Membuka Google di pop-up dengan kata kunci:\n${keyword}\n\nInput harga ke kotak "Harga Bekas".`);
+        
+        if (!merk) { alert("Masukkan Merk terlebih dahulu"); return; }
+        
+        let searchQuery = `harga bekas ${merk} ${tipe} ${storage}GB`.trim();
+        showIframeMode('Cek Harga Bekas', `https://www.bing.com/search?q=${encodeURIComponent(searchQuery)}`);
     });
 
-    // ==================== CEK DUPLIKAT PASPOR (DENGAN HASH SALT+PEPPER) ====================
-    let cekDuplikatTimeout;
-    const pasporInput = document.getElementById('nomorPaspor');
-    const pasporStatus = document.getElementById('pasporStatus');
-    let lastPasporValue = '';
+    function formatRupiah(angka) { return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(angka); }
     
-    async function cekDuplikatPaspor(nomorPaspor, tanggalKedatangan, kantorRegistrasi) {
-        try {
-            const response = await fetch(WEBAPP_URL, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    action: 'cekDuplikat',
-                    nomorPaspor: nomorPaspor,
-                    tanggalKedatangan: tanggalKedatangan,
-                    kantorRegistrasi: kantorRegistrasi
-                })
-            });
-            
-            const result = await response.json();
-            
-            if (result.duplicate) {
-                pasporStatus.className = 'paspor-status warning';
-                pasporStatus.innerHTML = `<i class="fas fa-exclamation-triangle"></i> ${result.message || 'Paspor ini sudah pernah registrasi sebelumnya.'}`;
-            } else {
-                pasporStatus.className = 'paspor-status success';
-                pasporStatus.innerHTML = `<i class="fas fa-check-circle"></i> ${result.message || 'Paspor baru tercatat dalam sistem.'}`;
-            }
-            
-            // Sembunyikan setelah 5 detik
-            setTimeout(() => {
-                if (pasporStatus.className !== 'paspor-status error') {
-                    pasporStatus.style.display = 'none';
-                    setTimeout(() => { pasporStatus.className = 'paspor-status'; }, 100);
-                }
-            }, 5000);
-            
-            return result;
-        } catch(error) {
-            console.error('Error cek duplikat:', error);
-            pasporStatus.className = 'paspor-status error';
-            pasporStatus.innerHTML = `<i class="fas fa-times-circle"></i> Gagal terhubung ke server. Periksa koneksi.`;
-            setTimeout(() => {
-                pasporStatus.style.display = 'none';
-                setTimeout(() => { pasporStatus.className = 'paspor-status'; }, 100);
-            }, 5000);
-            return { duplicate: false, error: true };
+    function parseHargaDariString(hargaStr) {
+        if (!hargaStr) return null;
+        const angka = hargaStr.match(/(\d+(?:[.,]\d+)*)/g);
+        if (!angka || angka.length === 0) return null;
+        let nilai = angka.map(a => parseFloat(a.replace(/\./g, '').replace(/,/g, '.'))).filter(v => !isNaN(v));
+        if (nilai.length === 0) return null;
+        let rata = nilai.reduce((a,b) => a+b,0) / nilai.length;
+        return rata;
+    }
+    
+    function getHargaBekasIDR() {
+        const manualHargaStr = document.getElementById("manualHargaBekas").value;
+        const hargaParsed = parseHargaDariString(manualHargaStr);
+        if (hargaParsed && hargaParsed > 0) {
+            return hargaParsed;
+        }
+        return null;
+    }
+    
+    function updateInfoHargaParsed() {
+        const harga = getHargaBekasIDR();
+        const infoDiv = document.getElementById("infoHargaBekasParsed");
+        if (harga && harga > 0) {
+            infoDiv.style.display = "block";
+            infoDiv.innerHTML = `<i class="fas fa-check-circle"></i> Harga Bekas terdeteksi: ${formatRupiah(harga)}<br><small>Nilai ini akan digunakan sebagai dasar perhitungan pajak.</small>`;
+        } else {
+            infoDiv.style.display = "none";
         }
     }
     
-    pasporInput.addEventListener('blur', () => {
-        const nomorPaspor = pasporInput.value.trim();
-        if (nomorPaspor.length < 3) return;
-        if (nomorPaspor === lastPasporValue) return;
-        lastPasporValue = nomorPaspor;
-        
-        const tanggalKedatangan = document.getElementById('tanggalKedatangan').value;
-        const kantorRegistrasi = document.getElementById('kantorReg').value.trim();
-        
-        pasporStatus.style.display = 'block';
-        pasporStatus.className = 'paspor-status';
-        pasporStatus.innerHTML = '<i class="fas fa-spinner fa-pulse"></i> Memeriksa riwayat paspor...';
-        
-        cekDuplikatPaspor(nomorPaspor, tanggalKedatangan, kantorRegistrasi);
-    });
+    document.getElementById("manualHargaBekas").addEventListener("input", updateInfoHargaParsed);
 
-    const jumlahPerangkatSelect = document.getElementById("jumlahPerangkat");
-    const device2Div = document.getElementById("device2Specs");
-    function toggleDevice2() { device2Div.style.display = jumlahPerangkatSelect.value === "2" ? "block" : "none"; }
-    jumlahPerangkatSelect.addEventListener("change", toggleDevice2);
-    toggleDevice2();
-
-    function hitungDeviasiHarga(hargaPengakuanIDR, hargaBingIDR) {
-        if (!hargaBingIDR || hargaBingIDR <= 0) return null;
-        const selisih = hargaPengakuanIDR - hargaBingIDR;
-        const persen = (selisih / hargaBingIDR) * 100;
-        return { selisih, persen };
-    }
-
+    const highRiskCountries = ["Singapura", "Hongkong", "Macau", "Amerika Serikat", "UAE", "Jepang", "Australia", "Korea"];
+    
     function hitungScoring() {
-        let riskIndicators = [];
+        let score = 0;
+        let totalParams = 12;
+        
         const negara = document.getElementById("negaraInbound").value;
-        const highRiskCountries = ["Singapura", "Hongkong", "Macau", "Amerika Serikat", "UAE", "Jepang", "Australia", "Korea"];
         const freq = parseInt(document.getElementById("jumlahTrip").value);
+        const tahunHp = parseInt(document.getElementById("tahunHp").value) || 2000;
         const tahunSekarang = new Date().getFullYear();
-        const tahunHp1 = parseInt(document.getElementById("tahunHp").value) || 2000;
-        const jmlPerangkat = parseInt(jumlahPerangkatSelect.value);
+        const jmlPerangkat = parseInt(document.getElementById("jumlahPerangkat").value);
+        const merk1 = document.getElementById("merkHp").value.trim().toLowerCase();
+        const merk2Brand = imeiData[2].brand?.toLowerCase() || "";
         const kotaPaspor = document.getElementById("kotaPaspor").value.trim();
         const kantorReg = document.getElementById("kantorReg").value.trim();
         const hariLuar = parseInt(document.getElementById("hariLuarNegeri").value) || 7;
         const pekerjaan = document.getElementById("pekerjaan").value;
-        let merk1 = document.getElementById("merkHp").value.trim().toLowerCase();
-        let merk2 = "", tahunHp2 = null;
-        if (jmlPerangkat === 2) {
-            merk2 = document.getElementById("merkHp2").value.trim().toLowerCase();
-            tahunHp2 = parseInt(document.getElementById("tahunHp2").value) || 2000;
+        
+        const hargaUSDInput = parseFloat(document.getElementById("hargaUSD").value) || 0;
+        const hargaIDRInput = hargaUSDInput * kursData.usd_to_idr;
+        const estimasiHargaBekasIDR = getHargaBekasIDR();
+        
+        let isHargaLebihMurahDariBekas = false;
+        if (estimasiHargaBekasIDR && estimasiHargaBekasIDR > 0 && hargaIDRInput > 0) {
+            if (hargaIDRInput < estimasiHargaBekasIDR * 0.9) {
+                isHargaLebihMurahDariBekas = true;
+                score++;
+            }
         }
-        if (highRiskCountries.includes(negara)) riskIndicators.push("Negara high risk");
-        if (freq > 1) riskIndicators.push("Frekuensi perjalanan >1");
-        if (tahunHp1 >= tahunSekarang) riskIndicators.push("Tahun perangkat 1 = tahun berjalan / baru");
-        if (jmlPerangkat > 1) riskIndicators.push("Jumlah perangkat > 1");
-        if (kotaPaspor && kantorReg && kotaPaspor !== kantorReg) riskIndicators.push("Alamat paspor ≠ kantor registrasi");
-        if (hariLuar < 4) riskIndicators.push("Hari di luar negeri < 4");
-        if (pekerjaan === "tidak_bekerja") riskIndicators.push("Tidak bekerja");
-        if (jmlPerangkat === 2 && merk1 && merk2 && merk1 === merk2) riskIndicators.push("⚠️ ANOMALI: Dua perangkat dengan MERK SAMA");
-        if (jmlPerangkat === 2 && tahunHp2 && tahunHp2 >= tahunSekarang) riskIndicators.push("⚠️ ANOMALI: Perangkat 2 tahun pembelian = tahun berjalan");
-        let score = riskIndicators.length;
-        let maxParams = 10;
-        let persen = (score / maxParams) * 100;
-        let probabilitas = persen >= 70 ? "🔴 TINGGI (≥70%) - Perlu pemeriksaan khusus" : (persen >= 40 ? "⚠️ SEDANG (40-69%) - Perlu klarifikasi lebih lanjut" : "✅ RENDAH (<40%) - Risiko jastip rendah");
-        return { score, maxParams, persen, probabilitas, riskIndicators };
+        
+        if (highRiskCountries.includes(negara)) score++;
+        if (freq > 1) score++;
+        const selisihTahun = tahunSekarang - tahunHp;
+        if (selisihTahun <= 1) score++;
+        if (selisihTahun === 0) score++;
+        if (jmlPerangkat > 1) score++;
+        if (jmlPerangkat > 2) score++;
+        if (imeiData[1].valid && imeiData[2].valid && merk1 && merk2Brand && merk1 === merk2Brand) score++;
+        if (kotaPaspor && kantorReg && kotaPaspor !== kantorReg) score++;
+        if (hariLuar < 4) score++;
+        if (pekerjaan === "tidak_bekerja") score++;
+        if (imeiData[1].blacklisted || imeiData[2].blacklisted) score += 2;
+        
+        let persen = (score / totalParams) * 100;
+        let probabilitas = "";
+        if (persen >= 70) probabilitas = "🔴 TINGGI (≥70%) - Perlu pemeriksaan khusus";
+        else if (persen >= 40) probabilitas = "⚠️ SEDANG (40-69%) - Perlu klarifikasi lebih lanjut";
+        else probabilitas = "✅ RENDAH (<40%) - Risiko jastip rendah";
+        
+        return { score, totalParams, persen, probabilitas, isHargaLebihMurahDariBekas, estimasiHargaBekasIDR, hargaIDRInput };
     }
-
-    function formatRupiah(angka) { return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(angka); }
 
     function generateWAMessage(data) {
         const nama = document.getElementById("namaPenumpang").value || "-";
         const paspor = document.getElementById("nomorPaspor").value || "-";
         const qrNomor = document.getElementById("nomorQR").value || "-";
-        const merk1 = document.getElementById("merkHp").value || "-";
-        const tipe1 = document.getElementById("tipeHp").value || "-";
-        const ram1 = document.getElementById("ramHp").value || "-";
-        const warna1 = document.getElementById("warnaHp").value || "-";
+        const merk = document.getElementById("merkHp").value || "-";
+        const tipe = document.getElementById("tipeHp").value || "-";
+        const ram = document.getElementById("ramHp").value || "-";
+        const storage = document.getElementById("storageHp").value || "-";
+        const warna = document.getElementById("warnaHp").value || "-";
         const i1 = imeiData[1].imei || "-";
         const i2 = imeiData[2].imei || "-";
-        const statusReg = data.statusRegistrasi === "bandara" ? "✅ BANDARA (dapat pembebasan)" : "🌐 WEB (tidak dapat pembebasan)";
+        const hargaInvoice = data.hargaInvoiceIDR;
+        const hargaBekas = data.hargaBekasIDR;
+        const totalPajak = data.totalPajak;
+        const statusReg = data.statusReg === "bandara" ? "✅ BANDARA (dapat pembebasan)" : "🌐 WEB (tidak dapat pembebasan)";
         const validasiStatus = data.tolak ? "❌ BELUM LENGKAP" : "✅ SESUAI";
-        let device2Text = "";
-        if (data.jumlahPerangkat === "2") {
-            const merk2 = document.getElementById("merkHp2").value || "-";
-            const tipe2 = document.getElementById("tipeHp2").value || "-";
-            const ram2 = document.getElementById("ramHp2").value || "-";
-            const warna2 = document.getElementById("warnaHp2").value || "-";
-            device2Text = `\n*PERANGKAT 2:* ${merk2} ${tipe2} | RAM ${ram2} | Warna ${warna2}`;
-        }
-        let hargaBingText = "";
-        if (data.hargaBingIDR && data.hargaBingIDR > 0) {
-            hargaBingText = `\n*Harga Bekas (pasar):* ${formatRupiah(data.hargaBingIDR)}\n*Deviasi Harga:* ${data.deviasi.persen > 0 ? 'Lebih tinggi' : 'Lebih rendah'} ${Math.abs(data.deviasi.persen).toFixed(1)}% dari harga pasar bekas.`;
-        } else {
-            hargaBingText = `\n*Harga Bekas (pasar):* Tidak diisi petugas.`;
-        }
+        
         const salam = new Date().getHours() < 12 ? "Selamat Pagi" : (new Date().getHours() < 18 ? "Selamat Siang" : "Selamat Sore");
-        return `Assalamualaikum Wr wb. \n\n${salam}\n\nKami sampaikan bahwa dokumen *Registrasi IMEI* dapat diakses melalui:\n\n🔗 _https://s.kemenkeu.go.id/ARSIPIMEI2025_\n(Dokumen tersedia pada folder sesuai tanggal)\n\n*STATUS REGISTRASI:* ${statusReg}\n*VALIDASI ADMINISTRASI:* ${validasiStatus}\n\nSebagai ringkasan, data pihak yang melakukan registrasi IMEI meliputi:\n\n* Kode QR : ${qrNomor}\n* Nama : ${nama}\n* No. Paspor : ${paspor}\n* PERANGKAT 1 : ${merk1} ${tipe1} | RAM ${ram1} | Warna ${warna1}${device2Text}\n* IMEI 1 : ${i1}\n* IMEI 2 : ${i2}\n* Harga pengakuan (invoice) : ${formatRupiah(data.hargaIDR)}${hargaBingText}\n\nTerima kasih atas perhatian Bapak/Ibu.`;
+        return `Assalamualaikum Wr wb. 
+
+${salam}
+
+Kami sampaikan bahwa dokumen *Registrasi IMEI* dapat diakses melalui:
+
+🔗 _https://s.kemenkeu.go.id/ARSIPIMEI2025_
+(Dokumen tersedia pada folder sesuai tanggal)
+
+*STATUS REGISTRASI:* ${statusReg}
+*VALIDASI ADMINISTRASI:* ${validasiStatus}
+
+Sebagai ringkasan, data pihak yang melakukan registrasi IMEI meliputi:
+
+* Kode QR : ${qrNomor}
+* Nama : ${nama}
+* No. Paspor : ${paspor}
+* Perangkat : ${merk} ${tipe}
+* RAM : ${ram}
+* Storage : ${storage}
+* Warna : ${warna}
+* IMEI 1 : ${i1}
+* IMEI 2 : ${i2}
+* Harga Invoice : ${formatRupiah(hargaInvoice)}
+* Harga Pasar (Bekas) : ${formatRupiah(hargaBekas)}
+* Total Pungutan : ${formatRupiah(totalPajak)}
+
+Terima kasih atas perhatian Bapak/Ibu.`;
     }
 
-    function hitungPajak(hargaIDR, statusReg) {
+    function hitungPajak(hargaBekasIDR, statusReg) {
         let pembebasan = statusReg === "bandara" ? 500 * kursData.usd_to_idr : 0;
-        let np = Math.max(0, hargaIDR - pembebasan);
+        let np = Math.max(0, hargaBekasIDR - pembebasan);
         let bea = Math.ceil(np * 0.1 / 1000) * 1000;
         let ppn = Math.ceil((np + bea) * 0.11 / 1000) * 1000;
         return { bea, ppn, total: bea + ppn, pembebasan, np };
@@ -513,10 +858,11 @@
         const bayar = document.getElementById("membayar").value === "bersedia";
         const invoice = document.getElementById("invoice").value === "ada";
         const statusReg = document.getElementById("statusRegistrasi").value;
-        const hargaUSD = parseFloat(document.getElementById("hargaUSD").value) || 0;
-        const hargaIDR = hargaUSD * kursData.usd_to_idr;
-        const jumlahPerangkat = jumlahPerangkatSelect.value;
-        const hargaBingIDR = parseFloat(document.getElementById("hargaBingIDR").value) || 0;
+        
+        const hargaUSDInvoice = parseFloat(document.getElementById("hargaUSD").value) || 0;
+        const hargaInvoiceIDR = hargaUSDInvoice * kursData.usd_to_idr;
+        const hargaBekasIDR = getHargaBekasIDR() || hargaInvoiceIDR;
+        
         let tolak = [];
         if (!qrAda) tolak.push("QR Code tidak ada");
         if (!tglValid) tolak.push(">60 hari");
@@ -524,20 +870,25 @@
         if (!paspor) tolak.push("Paspor tidak ada");
         if (!bayar) tolak.push("Tidak bersedia bayar");
         if (imeiData[1].blacklisted || imeiData[2].blacklisted) tolak.push("IMEI Blacklist");
+        if (!getHargaBekasIDR()) tolak.push("Harga bekas belum diisi - wajib diisi untuk perhitungan pajak");
+        
         let imeiManipulasi = false;
         if ((imeiData[1].valid && !imeiData[1].checked) || (imeiData[2].valid && !imeiData[2].checked)) {
             imeiManipulasi = true;
             tolak.push("IMEI tidak dicentang sesuai hasil cek - minta penumpang ubah data");
         }
-        let deviasi = null;
-        if (hargaBingIDR > 0) {
-            deviasi = hitungDeviasiHarga(hargaIDR, hargaBingIDR);
-            if (deviasi && Math.abs(deviasi.persen) > 50) tolak.push(`Harga pengakuan deviasi ${deviasi.persen > 0 ? 'lebih tinggi' : 'lebih rendah'} ${Math.abs(deviasi.persen).toFixed(0)}% dari harga pasar bekas (tidak wajar)`);
-        }
-        const perhitungan = hitungPajak(hargaIDR, statusReg);
+        
+        const perhitungan = hitungPajak(hargaBekasIDR, statusReg);
         const scoring = hitungScoring();
-        const waMsg = generateWAMessage({ hargaIDR, statusReg, tolak: tolak.length > 0, jumlahPerangkat, hargaBingIDR, deviasi });
+        const waMsg = generateWAMessage({ 
+            hargaInvoiceIDR, 
+            hargaBekasIDR, 
+            totalPajak: perhitungan.total,
+            statusReg, 
+            tolak: tolak.length > 0 
+        });
         document.getElementById("waMessage").value = waMsg;
+        
         return {
             checklist: [
                 { name: "QR Code", status: qrAda ? "pass" : "fail" },
@@ -546,113 +897,306 @@
                 { name: "Paspor Fisik", status: paspor ? "pass" : "fail" },
                 { name: "Kesediaan bayar", status: bayar ? "pass" : "fail" },
                 { name: "Invoice", status: invoice ? "pass" : "warning" },
+                { name: "Harga Bekas diisi", status: getHargaBekasIDR() ? "pass" : "fail" },
                 { name: "IMEI 1 sesuai", status: imeiData[1].valid && imeiData[1].checked ? "pass" : (imeiData[1].valid ? "warning" : "fail") },
                 { name: "IMEI 2 sesuai", status: imeiData[2].valid && imeiData[2].checked ? "pass" : (imeiData[2].valid ? "warning" : "fail") }
             ],
-            tolak: tolak.length > 0, daftarTolak: tolak, perhitungan: perhitungan, scoring: scoring,
-            hargaUSD: hargaUSD, hargaIDR: hargaIDR, imeiManipulasi: imeiManipulasi,
-            hargaBingIDR: hargaBingIDR, deviasi: deviasi
+            tolak: tolak.length > 0, 
+            daftarTolak: tolak, 
+            perhitungan: perhitungan, 
+            scoring: scoring,
+            hargaInvoiceUSD: hargaUSDInvoice,
+            hargaInvoiceIDR: hargaInvoiceIDR,
+            hargaBekasIDR: hargaBekasIDR,
+            imeiManipulasi: imeiManipulasi
         };
     }
     
     function updateTampilanDefault(data) {
         let chk = '';
-        data.checklist.forEach(i => { let icon = i.status === 'pass' ? '✅' : (i.status === 'fail' ? '❌' : '⚠️'); chk += `<div class="checklist-item ${i.status==='pass'?'checklist-pass':(i.status==='fail'?'checklist-fail':'checklist-warning')}"><div>${icon}</div><div>${i.name}</div></div>`; });
+        data.checklist.forEach(i => { 
+            let icon = i.status === 'pass' ? '✅' : (i.status === 'fail' ? '❌' : '⚠️'); 
+            chk += `<div class="checklist-item ${i.status==='pass'?'checklist-pass':(i.status==='fail'?'checklist-fail':'checklist-warning')}"><div>${icon}</div><div>${i.name}</div></div>`; 
+        });
         document.getElementById("checklistContainer").innerHTML = chk;
+        
         let alerts = '';
         if (data.tolak) alerts += `<div class="alert-box alert-danger"><strong>⛔ DITOLAK:</strong> ${data.daftarTolak.join(", ")}</div>`;
         if (data.imeiManipulasi) alerts += `<div class="alert-box alert-danger"><strong>🔴 ALERT MANIPULASI DATA:</strong> IMEI tidak dicentang sesuai hasil cek. Minta penumpang ubah data perangkat!</div>`;
+        if (data.scoring.isHargaLebihMurahDariBekas) {
+            alerts += `<div class="alert-box alert-warning"><strong>⚠️ POTENSI MANIPULASI HARGA:</strong> Harga invoice (${formatRupiah(data.scoring.hargaIDRInput)}) lebih rendah 10% dari estimasi harga bekas (${formatRupiah(data.scoring.estimasiHargaBekasIDR)}). Periksa keabsahan dokumen.</div>`;
+        }
         document.getElementById("alertContainer").innerHTML = alerts;
+        
         const s = data.scoring;
-        document.getElementById("scoreContainer").innerHTML = `Skor Risiko Jastip: ${s.score}/${s.maxParams} (${Math.round(s.persen)}%)<br>${s.probabilitas}`;
+        document.getElementById("scoreContainer").innerHTML = `Skor Jastip: ${s.score}/${s.totalParams} (${Math.round(s.persen)}%)<br>${s.probabilitas}`;
         document.getElementById("scoreFill").style.width = `${s.persen}%`;
         document.getElementById("probText").innerHTML = s.probabilitas;
-        document.getElementById("anomaliDetail").innerHTML = `<strong>📋 Faktor Risiko Teridentifikasi:</strong><br>${s.riskIndicators.map(r => `• ${r}`).join('<br>') || "Tidak ada indikasi menonjol"}`;
-        let deviasiHtml = "";
-        if (data.hargaBingIDR > 0 && data.deviasi) {
-            const warn = Math.abs(data.deviasi.persen) > 50 ? "⚠️" : "✅";
-            deviasiHtml = `<strong>📊 Perbandingan Harga:</strong><br>• Harga pengakuan (invoice): ${formatRupiah(data.hargaIDR)}<br>• Harga bekas dari pasar: ${formatRupiah(data.hargaBingIDR)}<br>• Deviasi: ${data.deviasi.persen > 0 ? 'Lebih tinggi' : 'Lebih rendah'} ${Math.abs(data.deviasi.persen).toFixed(1)}% dari harga pasar bekas.<br>${warn} ${Math.abs(data.deviasi.persen) > 50 ? 'Deviasi >50%: tidak wajar, perlu klarifikasi.' : 'Deviasi dalam batas wajar.'}`;
-        } else if (data.hargaBingIDR === 0) {
-            deviasiHtml = `<strong>📊 Perbandingan Harga:</strong><br>Petugas belum mengisi harga bekas dari hasil pencarian. Silakan cek Google (pop-up) dan input harga.`;
-        } else { deviasiHtml = `<strong>📊 Perbandingan Harga:</strong><br>Harga bekas tidak tersedia.`; }
-        document.getElementById("deviasiContainer").innerHTML = deviasiHtml;
+        
+        const elabBox = document.getElementById("elaborationBox");
+        if (s.persen > 80) {
+            elabBox.classList.add("show");
+        } else {
+            elabBox.classList.remove("show");
+        }
+        
         const p = data.perhitungan;
-        document.getElementById("hasilPajakContainer").innerHTML = `<table><tr><th>Komponen</th><th>Nilai</th></tr><tr><td>Harga (USD)</td><td>USD ${data.hargaUSD.toLocaleString()}</td></tr><tr><td>Harga (IDR)</td><td>${formatRupiah(data.hargaIDR)}</td></tr>
-  
-<td>Pembebasan</td><td>${p.pembebasan > 0 ? formatRupiah(p.pembebasan) : 'TIDAK DAPAT'}</td></tr>
-        <tr><td>Bea Masuk (10%)</td><td>${formatRupiah(p.bea)}</td></tr>
-        <tr><td>PPN (11%)</td><td>${formatRupiah(p.ppn)}</td></tr>
-        <tr style="border-top:2px solid #facc15;"><td><strong>TOTAL</strong></td><td><strong>${formatRupiah(p.total)}</strong></td></tr>
-        `;
-        document.getElementById("rangeContainer").innerHTML = `Range ±10%: ${formatRupiah(p.total*0.9)} ← ${formatRupiah(p.total)} → ${formatRupiah(p.total*1.1)}`;
+        document.getElementById("hasilPajakContainer").innerHTML = `
+            <table style="width:100%">
+                <tr style="border-bottom:1px solid #334155;"><td colspan="2"><strong>📋 DATA HARGA</strong></td></tr>
+                <tr><td>Harga Invoice (Referensi)</td><td>${formatRupiah(data.hargaInvoiceIDR)}</td></tr>
+                <tr style="border-bottom:1px solid #334155;"><td><strong>💰 Harga Bekas (Dasar Pajak)</strong></td><td><strong>${formatRupiah(data.hargaBekasIDR)}</strong></td></tr>
+                <tr style="border-bottom:1px solid #334155;"><td colspan="2"><strong>📊 PERHITUNGAN PUNGUTAN</strong></td></tr>
+                <tr><td>Pembebasan (USD 500)</td><td>${p.pembebasan > 0 ? formatRupiah(p.pembebasan) : 'TIDAK DAPAT'}</td></tr>
+                <tr><td>Nilai Pungut (NP)</td><td>${formatRupiah(p.np)}</td></tr>
+                <tr><td>Bea Masuk (10%)</td><td>${formatRupiah(p.bea)}</td></tr>
+                <tr><td>PPN (11%)</td><td>${formatRupiah(p.ppn)}</td></tr>
+                <tr style="border-top:2px solid #facc15;"><td><strong>TOTAL PUNGUTAN</strong></td><td><strong>${formatRupiah(p.total)}</strong></td></tr>
+             </table>`;
+        document.getElementById("rangeContainer").innerHTML = `📊 Perkiraan Kisaran Total Pajak (plus minus 10%): ${formatRupiah(p.total*0.9)} ← ${formatRupiah(p.total)} → ${formatRupiah(p.total*1.1)}`;
+    }
+    
+    function updateTampilanPengguna(data) {
+        let chk = '';
+        const onlyPass = data.checklist.filter(i => i.status === 'pass');
+        if (onlyPass.length === data.checklist.length) {
+            chk = `<div class="checklist-item checklist-pass"><div>✅</div><div>Semua dokumen lengkap dan sesuai</div></div>`;
+        } else {
+            chk = `<div class="checklist-item checklist-pass"><div>✅</div><div>Dokumen utama sudah lengkap</div></div>`;
+            if (data.checklist.some(i => i.status === 'warning')) {
+                chk += `<div class="checklist-item checklist-pass"><div>⚠️</div><div>Beberapa dokumen pendukung masih dalam proses verifikasi</div></div>`;
+            }
+        }
+        document.getElementById("checklistContainer").innerHTML = chk;
+        document.getElementById("alertContainer").innerHTML = '';
+        
+        const p = data.perhitungan;
+        document.getElementById("hasilPajakContainer").innerHTML = `
+            <table style="width:100%">
+                <tr><td><strong>Dasar Perhitungan (Harga Pasar)</strong></td><td><strong>${formatRupiah(data.hargaBekasIDR)}</strong></td></tr>
+                <tr><td>Pembebasan (USD 500)</td><td>${p.pembebasan > 0 ? formatRupiah(p.pembebasan) : 'TIDAK DAPAT'}</td></tr>
+                <tr><td>Bea Masuk (10%)</td><td>${formatRupiah(p.bea)}</td></tr>
+                <tr><td>PPN (11%)</td><td>${formatRupiah(p.ppn)}</td></tr>
+                <tr style="border-top:2px solid #facc15;"><td><strong>TOTAL PUNGUTAN</strong></td><td><strong>${formatRupiah(p.total)}</strong></td></tr>
+             </table>`;
     }
     
     document.getElementById("runAnalisisBtn").addEventListener("click", async () => {
         const i1 = document.getElementById("imei1").value, i2 = document.getElementById("imei2").value;
         if (i1 && !imeiData[1].valid) await cekIMEIOnline(i1, 1);
         if (i2 && !imeiData[2].valid) await cekIMEIOnline(i2, 2);
+        
+        updateInfoHargaParsed();
+        
         const data = generateAnalisis();
         window.lastAnalisisData = data;
-        updateTampilanDefault(data);
+        
+        if (currentMode === 'petugas') {
+            updateTampilanDefault(data);
+        } else {
+            updateTampilanPengguna(data);
+        }
     });
     
     document.getElementById("copyWaBtn").addEventListener("click", () => {
         const wa = document.getElementById("waMessage");
-        wa.select(); document.execCommand("copy"); alert("✅ Pesan WhatsApp disalin!");
+        wa.select();
+        document.execCommand("copy");
+        alert("✅ Pesan WhatsApp disalin ke clipboard!");
     });
     
-    // ==================== FEEDBACK MODAL ====================
-    const modal = document.getElementById('feedbackModal');
-    const feedbackBtn = document.getElementById('feedbackBtn');
-    const closeModalBtn = document.getElementById('closeModalBtn');
-    const sendFeedbackBtn = document.getElementById('sendFeedbackBtn');
-    const toast = document.getElementById('toastMessage');
+    // ==================== FITUR SIMPAN DATA REGISTRASI (DENGAN HASH) ====================
+    const saveRegBtn = document.getElementById('saveRegBtn');
     
-    function showToast(message, isError = false) {
-        toast.textContent = message;
-        toast.style.background = isError ? '#ef4444' : '#10b981';
-        toast.style.display = 'block';
-        setTimeout(() => { toast.style.display = 'none'; }, 4000);
-    }
-    
-    feedbackBtn.addEventListener('click', () => { modal.style.display = 'flex'; });
-    closeModalBtn.addEventListener('click', () => { modal.style.display = 'none'; });
-    modal.addEventListener('click', (e) => { if (e.target === modal) modal.style.display = 'none'; });
-    
-    sendFeedbackBtn.addEventListener('click', async () => {
-        const pesan = document.getElementById('feedbackPesan').value.trim();
-        if (!pesan) {
-            alert('Harap isi pesan feedback Anda.');
+    saveRegBtn.addEventListener('click', async () => {
+        const namaAsli = document.getElementById('namaPenumpang').value.trim();
+        const nomorPasporAsli = document.getElementById('nomorPaspor').value.trim();
+        const kantorRegistrasi = document.getElementById('kantorReg').value.trim();
+        const merkPerangkat = document.getElementById('merkHp').value.trim();
+        const tipePerangkat = document.getElementById('tipeHp').value.trim();
+
+        if (!namaAsli) {
+            showToast('❌ Nama Penumpang wajib diisi!', true);
             return;
         }
-        const data = {
-            email: document.getElementById('feedbackEmail').value.trim(),
-            jenis: document.getElementById('feedbackJenis').value,
-            pesan: pesan,
-            halaman: 'Registrasi IMEI - Main App'
+        if (!nomorPasporAsli) {
+            showToast('❌ Nomor Paspor wajib diisi!', true);
+            return;
+        }
+        if (!kantorRegistrasi) {
+            showToast('❌ Kantor Registrasi wajib diisi!', true);
+            return;
+        }
+        if (!merkPerangkat) {
+            showToast('❌ Merk Perangkat wajib diisi!', true);
+            return;
+        }
+        if (!tipePerangkat) {
+            showToast('❌ Tipe Perangkat wajib diisi!', true);
+            return;
+        }
+
+        const hashNama = await sha256(namaAsli);
+        const hashPaspor = await sha256(nomorPasporAsli);
+
+        const now = new Date();
+        const timestamp = now.toLocaleString('id-ID', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit'
+        });
+
+        const dataRegistrasi = {
+            type: 'registration',
+            timestamp: timestamp,
+            hashNama: hashNama,
+            hashPaspor: hashPaspor,
+            kantorRegistrasi: kantorRegistrasi,
+            merkPerangkat: merkPerangkat,
+            tipePerangkat: tipePerangkat
         };
-        sendFeedbackBtn.disabled = true;
-        sendFeedbackBtn.innerHTML = '<i class="fas fa-spinner fa-pulse"></i> Mengirim...';
+
+        saveRegBtn.disabled = true;
+        saveRegBtn.innerHTML = '<i class="fas fa-spinner fa-pulse"></i> Menyimpan...';
+
         try {
-            await fetch(WEBAPP_URL, {
+            await fetch(APPS_SCRIPT_URL, {
                 method: 'POST',
+                mode: 'no-cors',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data)
+                body: JSON.stringify(dataRegistrasi)
             });
-            showToast('✅ Terima kasih! Masukan Anda telah kami terima.', false);
-            modal.style.display = 'none';
-            document.getElementById('feedbackPesan').value = '';
-            document.getElementById('feedbackEmail').value = '';
+            showToast('✅ Data registrasi berhasil disimpan (data nama & paspor terenkripsi)!');
         } catch (error) {
             console.error('Error:', error);
-            showToast('❌ Gagal mengirim. Silakan coba lagi.', true);
+            showToast('⚠️ Gagal menyimpan data.', true);
         } finally {
-            sendFeedbackBtn.disabled = false;
-            sendFeedbackBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Kirim';
+            saveRegBtn.disabled = false;
+            saveRegBtn.innerHTML = '<i class="fas fa-save"></i> Simpan Data Registrasi';
         }
     });
     
-    document.getElementById("defaultContent").style.display = "block";
+    // ==================== FITUR CEK DUPLIKASI PASPOR (DENGAN HASH) ====================
+    const cekDuplikasiBtn = document.getElementById('cekDuplikasiBtn');
+    if (cekDuplikasiBtn) {
+        cekDuplikasiBtn.addEventListener('click', async () => {
+            const nomorPasporAsli = document.getElementById('nomorPaspor').value.trim();
+            if (!nomorPasporAsli) {
+                showToast('❌ Masukkan nomor paspor terlebih dahulu!', true);
+                return;
+            }
+
+            cekDuplikasiBtn.disabled = true;
+            cekDuplikasiBtn.innerHTML = '<i class="fas fa-spinner fa-pulse"></i> Memeriksa...';
+
+            try {
+                const hashPaspor = await sha256(nomorPasporAsli);
+                const url = `${APPS_SCRIPT_URL}?action=cekDuplikasi&hashPaspor=${encodeURIComponent(hashPaspor)}`;
+                const response = await fetch(url);
+                const result = await response.json();
+
+                if (result.success && result.ditemukan) {
+                    const data = result.data;
+                    const message = `✅ Paspor sudah pernah diregistrasi!\n\n` +
+                        `📅 Tanggal: ${data.timestamp}\n` +
+                        `🏢 Kantor Registrasi: ${data.kantorRegistrasi}\n` +
+                        `📱 Merk: ${data.merkPerangkat}\n` +
+                        `📱 Tipe: ${data.tipePerangkat}\n\n` +
+                        `⚠️ Data nama dan nomor paspor dienkripsi untuk keamanan.`;
+                    alert(message);
+                } else if (result.success && !result.ditemukan) {
+                    showToast('✅ Nomor paspor belum pernah diregistrasi. Silakan lanjutkan.', false);
+                } else {
+                    showToast('❌ Gagal mengecek duplikasi: ' + (result.error || 'Unknown error'), true);
+                }
+            } catch (err) {
+                console.error(err);
+                showToast('❌ Gagal terhubung ke server. Periksa koneksi atau URL Apps Script.', true);
+            } finally {
+                cekDuplikasiBtn.disabled = false;
+                cekDuplikasiBtn.innerHTML = '<i class="fas fa-search"></i> Cek Duplikasi';
+            }
+        });
+    }
+    
+    // ==================== FITUR SARAN & MASUKAN ====================
+    const modalSaran = document.getElementById('modalSaran');
+    const feedbackBtn = document.getElementById('feedbackBtn');
+    const closeModalBtn = document.getElementById('closeModalBtn');
+    const kirimSaranBtn = document.getElementById('kirimSaranBtn');
+    const toastMsg = document.getElementById('toastMsg');
+    const toastText = document.getElementById('toastText');
+    
+    function showToast(message, isError = false) {
+        toastText.innerHTML = message;
+        toastMsg.classList.add('show');
+        toastMsg.style.background = isError ? '#ef4444' : '#10b981';
+        setTimeout(() => {
+            toastMsg.classList.remove('show');
+        }, 3000);
+    }
+    
+    feedbackBtn.addEventListener('click', () => {
+        modalSaran.classList.add('show');
+    });
+    
+    closeModalBtn.addEventListener('click', () => {
+        modalSaran.classList.remove('show');
+        document.getElementById('namaPetugas').value = '';
+        document.getElementById('isiSaran').value = '';
+    });
+    
+    modalSaran.addEventListener('click', (e) => {
+        if (e.target === modalSaran) {
+            modalSaran.classList.remove('show');
+        }
+    });
+    
+    kirimSaranBtn.addEventListener('click', async () => {
+        const namaPetugas = document.getElementById('namaPetugas').value.trim() || 'Petugas Anonim';
+        const isiSaran = document.getElementById('isiSaran').value.trim();
+        
+        if (!isiSaran) {
+            showToast('❌ Saran tidak boleh kosong!', true);
+            return;
+        }
+        
+        const dataSaran = {
+            type: 'feedback',
+            namaPetugas: namaPetugas,
+            saran: isiSaran,
+            timestamp: new Date().toLocaleString('id-ID')
+        };
+        
+        kirimSaranBtn.disabled = true;
+        kirimSaranBtn.innerHTML = '<i class="fas fa-spinner fa-pulse"></i> Mengirim...';
+        
+        try {
+            await fetch(APPS_SCRIPT_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(dataSaran)
+            });
+            showToast('✅ Terima kasih! Saran Anda telah tersimpan.');
+            modalSaran.classList.remove('show');
+            document.getElementById('namaPetugas').value = '';
+            document.getElementById('isiSaran').value = '';
+        } catch (error) {
+            console.error('Error:', error);
+            showToast('⚠️ Gagal menyimpan saran.', true);
+        } finally {
+            kirimSaranBtn.disabled = false;
+            kirimSaranBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Kirim Saran';
+        }
+    });
+    
+    // Inisialisasi
+    showDefaultMode();
+    updateInfoHargaParsed();
 </script>
 </body>
 </html>
